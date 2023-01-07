@@ -40,4 +40,7 @@ export default {
 .el-header{
     padding: 0;
 }
+.el-main{
+    padding-top: 0;
+}
 </style>
