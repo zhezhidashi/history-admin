@@ -6,26 +6,48 @@ import Main from '../views/Main.vue'
 import Mall from '../views/Mall.vue'
 import PageOne from '../views/PageOne.vue'
 import PageTwo from '../views/PageTwo.vue'
+import Login from '../views/Login'
+import Cookie from 'js-cookie'
 
 Vue.use(VueRouter)
 
 const routes = [
     {
         path: '/',
+        name:'main',
         component: Main,
         redirect: '/home',
         children: [
-            { path: 'home',name: 'home', component: Home },
-            { path: 'user',name: 'user', component: User },
-            { path: 'mall',name: 'mall', component: Mall },
-            { path: 'page1',name: 'page1', component: PageOne },
-            { path: 'page2',name: 'page2', component: PageTwo },
+            // { path: 'home',name: 'home', component: Home },
+            // { path: 'user',name: 'user', component: User },
+            // { path: 'mall',name: 'mall', component: Mall },
+            // { path: 'page1',name: 'page1', component: PageOne },
+            // { path: 'page2',name: 'page2', component: PageTwo },
         ]
+    },
+    {
+        name: 'login',
+        path: '/login',
+        component: Login,
     }
 ]
 
 const router = new VueRouter({
     routes
+})
+
+// 添加全局前置导航守卫
+router.beforeEach((to, from ,next) => {
+    const token = Cookie.get('token')
+    if(!token && to.name !== 'login') {
+        next({name: 'login'})
+    }
+    else if(token && to.name === 'login'){
+        next({name: 'home'})
+    }
+    else{
+        next()
+    }
 })
 
 export default router

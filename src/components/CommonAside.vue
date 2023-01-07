@@ -10,7 +10,7 @@
       active-text-color="#ffd04b"
     >
     <h3>{{ isCollapse ? "后台" : "后台管理系统" }}</h3>
-      <el-menu-item v-for="item in noChildren" :key="item.name" :index="item.name"
+      <el-menu-item v-for="item in noChildren" :key="item.path" :index="item.path"
         @click="clickMenu(item)"
       >
         <i :class="'el-icon-' + item.icon"></i>
@@ -55,52 +55,11 @@
 </style>
 
 <script>
+import Cookie from 'js-cookie';
 export default {
     data() {
       return {
-          menu: [
-            {
-              path: '/',
-              name: 'home',
-              label: '首页',
-              icon: 's-home',
-              url: 'Home/Home'
-            },
-            {
-              path: '/mall',
-              name: 'mall',
-              label: '商品管理',
-              icon: 'video-play',
-              url: 'MallManage/MallManage'
-            },
-            {
-              path: '/user',
-              name: 'user',
-              label: '用户管理',
-              icon: 'user',
-              url: 'UserManage/UserManage'
-            },
-            {
-              label: '其他',
-              icon: 'location',
-              children: [
-                {
-                  path: '/page1',
-                  name: 'page1',
-                  label: '页面1',
-                  icon: 'setting',
-                  url: 'Other/PageOne'
-                },
-                {
-                  path: '/page2',
-                  name: 'page2',
-                  label: '页面2',
-                  icon: 'setting',
-                  url: 'Other/PageTwo'
-                }
-              ]
-            }
-          ]
+          
       };
     },
     methods: {
@@ -126,7 +85,13 @@ export default {
       },
       isCollapse(){
         return this.$store.state.tab.isCollapse
+      },
+      menu(){
+        return JSON.parse(Cookie.get('menu')) || this.$store.state.tab.menu
       }
+    },
+    mounted(){
+      console.log('Menu: ', this.$store.state.tab.menu);
     }
 }
 </script>

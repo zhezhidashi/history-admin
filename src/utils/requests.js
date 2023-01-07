@@ -1,7 +1,10 @@
 import axios from "axios";
 
+// const baseURL = 'http://room_dev_client.pacificsilkroad.cn'
+const baseURL = 'https://room_dev_api_doc.pacificsilkroad.cn'
+
 const http = axios.create({
-    baseURL: '/api',
+    baseURL: baseURL,
     timeout: 10000,
 })
 
