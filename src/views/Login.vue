@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import {login, getMenu} from '../api/myAxios'
+import {getMenu} from '../api/myAxios'
+import {login} from '../api/CommonData'
 import Cookie from 'js-cookie'
 
 function getMenuCallback(oriThis, data) {

@@ -54,12 +54,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="content.name"
+                    prop="name"
                     label="档案名称"
                     width="270">
                 </el-table-column>
                 <el-table-column
-                    prop="content.describe"
+                    prop="detail"
                     label="说明"
                     width="500">
                 </el-table-column>
@@ -162,17 +162,16 @@ export default {
             // this.getUserList()
         },
         updateArchivesList(){
-            this.total = 2
-            const tid = config.templateId.archivesTemplateId
-            let oriThis = this
-            getChildNode('root/archives', tid, (response) => {
-                oriThis.tableData.push(response)
-            })
+            const response = getArchivesList()
+            console.log('Archives data', response);
+            this.tableData = response.data
+            this.total = response.count
         }
     },
     mounted(){
         this.updateArchivesList()
-        
+        const tid = config.templateId.archivesTemplateId
+        getChildNode('root/archives', tid, 1)
     }, 
   };
 </script> 

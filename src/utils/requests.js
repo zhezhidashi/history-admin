@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// const baseURL = 'http://room_dev_client.pacificsilkroad.cn'
-const baseURL = 'https://room_dev_api_doc.pacificsilkroad.cn'
+const baseURL = ''
 
 const http = axios.create({
     baseURL: baseURL,
@@ -27,5 +26,6 @@ http.interceptors.response.use(function (response) {
     // 对响应错误做点什么
     return Promise.reject(error);
   });
+
 
 export default http
