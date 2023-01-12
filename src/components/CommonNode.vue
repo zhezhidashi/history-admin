@@ -5,32 +5,48 @@
         </div>
     
         <el-dialog
-            title="提示"
+            title="选择模板"
             :visible.sync="dialogVisible"
             width="50%"
             :before-close="handleClose"
             :close-on-click-modal="false"
         >
-            <el-form :inline="true" ref="form" :model="form" label-width="80px">
-                <el-form-item label="姓名" prop="username">
-                    <el-input v-model="form.username" placeholder="请输入姓名"></el-input>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input v-model="form.password" placeholder="请输入密码"></el-input>
-                </el-form-item>
-                <!-- <el-form-item label="性别" prop="sex">
-                    <el-select v-model="form.sex" placeholder="请选择性别">
-                        <el-option label="男" value="male"></el-option>
-                        <el-option label="女" value="female"></el-option>
+            <el-form :inline="true" ref="templateForm" :model="form" label-width="80px">
+                <el-form-item label="模板">
+                    <el-select v-model="templateForm.templateId" placeholder="请选择模板">
+                        <!-- <el-option label="区域一" value="shanghai"></el-option> -->
+                        <el-option v-for="child in childTemplate" :key="child.main_id"
+                            :label="child.name"
+                            :value="child.main_id"
+                        >
+                        </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="家庭住址" prop="addr">
-                    <el-input v-model="form.addr" placeholder=""></el-input>
-                </el-form-item> -->
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">取 消</el-button>
-                <el-button type="primary" @click="submit">确 定</el-button>
+                <el-button type="primary" @click="submitTemplate">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <el-dialog
+            title="新增数据"
+            :visible.sync="dataDialogVisible"
+            width="50%"
+            :before-close="handleClose"
+            :close-on-click-modal="false"
+        >
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item v-for="item of Object.entries(this.selectedChildTemplate.structure)"
+                    :key="item[0]"
+                    :label="item[1].show_name"
+                >
+                    <el-input v-model="form[item[0]]"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="handleClose">取 消</el-button>
+                <el-button type="primary" @click="submitData">确 定</el-button>
             </span>
         </el-dialog>
 
@@ -77,20 +93,24 @@
 </template>
 
 <script>
-import {getArchivesList, getChildNode} from '../api/CommonData.js'
-import config from '../config'
+import {getChildTemplate, getChildNode, postForm} from '../api/CommonData.js'
+import {getNewName} from '../utils/name'
 
 export default {
     data() {
       return {
         dialogVisible: false,
-        form: {
-            username: '',
-            password: '',
+        dataDialogVisible: false,
+        templateForm: {
+            templateId: undefined
         },
-        tableData: [
-
-        ],
+        selectedChildTemplate: {
+            structure: {}
+        },
+        form: {
+        },
+        tableData: [],
+        childTemplate: [],
         modalType: 0,
         total: 0,
         pageConfig:{
@@ -100,27 +120,47 @@ export default {
       };
     },
     methods: {
-        submit(){
-            // console.log(this.form, 'form')
-            if(this.modalType === 0){
-                createuser(this.form).then(() => {
-                    this.updateArchivesList()
-                })
+        submitTemplate(){
+            console.log('choose template:', this.templateForm.templateId)
+            this.dialogVisible = false
+            for(let item of this.childTemplate ) {
+                if(item.main_id === this.templateForm.templateId){
+                    this.selectedChildTemplate = item
+                    break
+                }
             }
-            else{
-                edituser(this.form).then(() => {
-                    this.updateArchivesList()
-                })
+            // 利用整体替换使响应式能够识别form的修改
+            var tmp = {}
+            for(let item of Object.entries(this.selectedChildTemplate.structure)){
+                tmp[item[0]] = undefined
             }
-            this.handleClose()
+            this.form = tmp
+            // console.log("form", this.form);
+            this.dataDialogVisible = true
+        },
+        submitData(){
+            console.log('finished form', this.form);
+            const newName = getNewName()
+            let oriThis = this
+            postForm('data/add', {
+                path: this.$store.state.data.dataPath + '/' + newName,
+                template_id: this.templateForm.templateId,
+                content: this.form
+            }, (response) => {
+                console.log("add data: ", response);
+                oriThis.updateTableData()
+                oriThis.dataDialogVisible = false
+            })
         },
         handleClose(){
-            this.$refs.form.resetFields()
+            // this.$refs.form.resetFields()
             this.dialogVisible = false
+            this.dataDialogVisible = false
         },
         handleAdd(){
             this.modalType = 0
             this.dialogVisible = true
+            console.log('child_template: ', this.childTemplate);
         },
         handleEdit(row){
             // console.log(index, row);
@@ -144,7 +184,7 @@ export default {
                             type: 'success',
                             message: '删除成功!'
                         });
-                        this.updateArchivesList()
+                        this.updateTableData()
                     });
                     
                 }).catch(() => {
@@ -160,19 +200,29 @@ export default {
 
             // this.getUserList()
         },
-        updateArchivesList(){
+        updateTableData(){
             this.total = 2
+            this.tableData = []
             const tid = this.$store.state.data.templateId
-            console.log('tid: ', this.$store.state.data)
+            // console.log('tid: ', this.$store.state.data)
             let oriThis = this
             getChildNode(this.$store.state.data.dataPath, tid, (response) => {
+                // console.log("data item",response);
                 oriThis.tableData.push(response)
             })
         }
     },
     mounted(){
         console.log('node mounted');
-        this.updateArchivesList()
+        this.updateTableData()
+        this.childTemplate.clear
+
+        let oriThis = this
+        getChildTemplate(this.$store.state.data.templateId, (response) => {
+            // console.log('add childtemplate ', response);
+            oriThis.childTemplate.push(response)
+        })
+        console.log(getNewName());
     }, 
   };
 </script> 

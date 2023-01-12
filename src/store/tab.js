@@ -55,7 +55,7 @@ export default {
                         menuArray.push(item)
                     }
                 });
-                console.log('menuArray: ', menuArray);
+                // console.log('menuArray: ', menuArray);
 
                 menuArray.forEach(item => {
                     router.addRoute('main', item)

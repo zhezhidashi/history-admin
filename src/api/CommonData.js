@@ -56,9 +56,20 @@ export const postForm = (url, data, callback) => {
     })
 }
 
+export const getChildTemplate = (templateId, callback) => {
+    getTemplateInfo(templateId, (response) => {
+        const childTemplate = response.data.children_template_limit
+        childTemplate.forEach(item => {
+            getTemplateInfo(item, (response) => {
+                callback(response.data)
+            })
+        })
+    })
+}
+
 export const getChildNode = (path, templateId, callback) => {
     getTemplateInfo(templateId, (response) => {
-        console.log(response);
+        // console.log(response);
         response.code = 0
         if(response.code === 0){
             const childTemplate = response.data.children_template_limit
@@ -78,9 +89,8 @@ export const getChildNode = (path, templateId, callback) => {
                     },
                     "template_id": item
                 }
-                console.log('request: ', requestData);
                 postForm('/data/list', requestData, (response) => {
-                    console.log(response);
+                    // console.log(response);
                     response.data.list.forEach((item) => {
                         postForm('/data/node', {'path': item.path}, (response) => {
                             // console.log(response);

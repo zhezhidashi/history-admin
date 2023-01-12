@@ -18,14 +18,14 @@ new Vue({
     this.$store.commit('addMenu', router)
     //在页面加载时读取sessionStorage里的状态信息
     if (sessionStorage.getItem("store")) {
-      console.log('页面重新加载');
+      // console.log('页面重新加载');
       let storet = sessionStorage.getItem("store");
-      console.log(storet);
+      // console.log(storet);
       this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(storet == null ? '' : storet)))
     }
     //在页面刷新时将vuex里的信息保存到sessionStorage里
     window.addEventListener("beforeunload", () => {
-      console.log('页面被刷新');
+      // console.log('页面被刷新');
       let state = JSON.stringify(this.$store.state)
       sessionStorage.setItem("store", state == null ? '' : state)
     })
