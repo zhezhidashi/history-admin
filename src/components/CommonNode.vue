@@ -54,12 +54,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="name"
+                    prop="content.name"
                     label="档案名称"
                     width="270">
                 </el-table-column>
                 <el-table-column
-                    prop="detail"
+                    prop="content.describe"
                     label="说明"
                     width="500">
                 </el-table-column>
@@ -77,9 +77,8 @@
 </template>
 
 <script>
-import {getArchivesList, getChildNode} from '../..//api/CommonData.js'
-import ArchievesItem from './ArchivesItem.vue';
-import config from '../../config'
+import {getArchivesList, getChildNode} from '../api/CommonData.js'
+import config from '../config'
 
 export default {
     data() {
@@ -162,16 +161,18 @@ export default {
             // this.getUserList()
         },
         updateArchivesList(){
-            const response = getArchivesList()
-            console.log('Archives data', response);
-            this.tableData = response.data
-            this.total = response.count
+            this.total = 2
+            const tid = this.$store.state.data.templateId
+            console.log('tid: ', this.$store.state.data)
+            let oriThis = this
+            getChildNode(this.$store.state.data.dataPath, tid, (response) => {
+                oriThis.tableData.push(response)
+            })
         }
     },
     mounted(){
+        console.log('node mounted');
         this.updateArchivesList()
-        const tid = config.templateId.archivesTemplateId
-        getChildNode('root/archives', tid, 1)
     }, 
   };
 </script> 

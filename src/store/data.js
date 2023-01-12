@@ -1,12 +1,12 @@
 export default {
-    state: {
-        path: '',
+    state:{
+        dataPath: '',
         templateId: 1,
         nodeTableData:[],
     },
     mutations: {
-        setPath(state, newPath){
-            state.path = newPath
+        setDataPath(state, newPath){
+            state.dataPath = newPath
         },
         setTemplateId(state, newId){
             state.templateId = newId

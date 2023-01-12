@@ -45,6 +45,7 @@ export const getTemplateInfo = (templateId, callback) => {
 
 export const postForm = (url, data, callback) => {
     const token = Cookie.get('token')
+    // console.log('post: ', data);
     http.request({
         method: "post",
         url: baseURL + url,
@@ -61,10 +62,8 @@ export const getChildNode = (path, templateId, callback) => {
         response.code = 0
         if(response.code === 0){
             const childTemplate = response.data.children_template_limit
-            console.log('templateid: ', childTemplate);
-            const ret = []
+            // console.log('templateid: ', childTemplate);
             childTemplate.forEach(item => {
-                console.log("aaa: ", path, item);
                 const requestData = {
                     "location_id": 99999999,
                     "page_index": 1,
@@ -79,11 +78,12 @@ export const getChildNode = (path, templateId, callback) => {
                     },
                     "template_id": item
                 }
+                console.log('request: ', requestData);
                 postForm('/data/list', requestData, (response) => {
-                    console.log(response.data.list);
+                    console.log(response);
                     response.data.list.forEach((item) => {
                         postForm('/data/node', {'path': item.path}, (response) => {
-                            console.log(response);
+                            // console.log(response);
                             callback(response.data)
                         })
                     })

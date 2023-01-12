@@ -19,7 +19,6 @@ const routes = [
             // { path: 'mall',name: 'mall', component: Mall },
             // { path: 'page1',name: 'page1', component: PageOne },
             // { path: 'page2',name: 'page2', component: PageTwo },
-            {path: 'archives/archives_item', name:'archivesItem', component: ArchivesItem}
         ]
     },
     {

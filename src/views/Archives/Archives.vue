@@ -163,7 +163,8 @@ export default {
         },
         updateArchivesList(){
             this.total = 2
-            const tid = config.templateId.archivesTemplateId
+            const tid = this.$store.state.data.templateId
+            console.log('tid: ', this.$store.state.data);
             let oriThis = this
             getChildNode('root/archives', tid, (response) => {
                 oriThis.tableData.push(response)

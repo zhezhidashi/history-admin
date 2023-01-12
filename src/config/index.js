@@ -1,32 +1,35 @@
+const templateId = {
+    archivesTemplateId: 8,
+}
+
 export default {
-    templateId: {
-        archivesTemplateId: 8,
-    },
     mainMenu: [
         {
             path: '/home',
             name: 'home',
             label: '首页',
             icon: 's-home',
-            url: 'Home'
+            url: 'views/Home'
         },
         {
             path: '/user',
             name: 'user',
             label: '用户管理',
             icon: 'user',
-            url: 'User'
+            url: 'views/User'
         },
         {
             label: '内容管理',
             icon: 's-order',
             children: [
                 {
-                    path: '/archives',
+                    dataPath: 'root/archives',
+                    path: '/node',
                     name: 'archives',
                     label: '档案/手稿',
                     icon: 'video-play',
-                    url: 'Archives/Archives'
+                    url: 'components/CommonNode',
+                    templateId: templateId.archivesTemplateId
                 },
                 {
                     path: '/picture',

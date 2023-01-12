@@ -70,9 +70,17 @@ export default {
           console.log(key, keyPath);
       },
       clickMenu(item){
-        if(this.$route.path !== item.path && !(this.$route.path === '/home' && item.path === '/')){
+        
+        if(this.$route.path !== item.routePath){
           this.$router.push(item.path)
         }
+        else if(item.routePath === '/node'){
+          if(item.dataPath !== this.$store.state.data.dataPath){
+            this.$router.push(item.path)            
+          }
+        }
+        this.$store.commit('setTemplateId', item.templateId)
+        this.$store.commit('setDataPath', item.dataPath)
         this.$store.commit('selectMenu', item)
       }
     },
@@ -91,7 +99,8 @@ export default {
       }
     },
     mounted(){
-      console.log('Menu: ', this.$store.state.tab.menu);
+      console.log('Menu: ', this.menu);
+      console.log('Vue: ', this);
     }
 }
 </script>

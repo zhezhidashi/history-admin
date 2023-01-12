@@ -21,7 +21,7 @@ export default {
         },
         // 更改面包屑数据
         selectMenu(state, val) {
-            console.log(val);
+            // console.log(val);
             if(val.name !== 'home'){
                 const index = state.tabsList.findIndex(item => item.name === val.name)
                 if(index === -1){
@@ -45,13 +45,13 @@ export default {
                 menu.forEach(item => {
                     if(item.children){
                         item.children = item.children.map(item => {
-                            item.component = () => import(`../views/${item.url}`)
+                            item.component = () => import(`../${item.url}`)
                             return item
                         })
                         menuArray.push(...item.children)
                     }
                     else{
-                        item.component = () => import(`../views/${item.url}`)
+                        item.component = () => import(`../${item.url}`)
                         menuArray.push(item)
                     }
                 });
