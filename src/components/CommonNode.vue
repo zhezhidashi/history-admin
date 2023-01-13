@@ -10,8 +10,13 @@
             width="50%"
             :before-close="handleClose"
             :close-on-click-modal="false"
+            
         >
-            <el-form :inline="true" ref="templateForm" :model="form" label-width="80px">
+            <el-form :inline="true" 
+                ref="templateForm"
+                :model="templateForm" 
+                label-width="80px" 
+            >
                 <el-form-item label="模板">
                     <el-select v-model="templateForm.templateId" placeholder="请选择模板">
                         <!-- <el-option label="区域一" value="shanghai"></el-option> -->
@@ -41,7 +46,8 @@
                     :key="item[0]"
                     :label="item[1].show_name"
                 >
-                    <el-input v-model="form[item[0]]"></el-input>
+                    <el-input v-if="item[1].data_type === 'str'" v-model="form[item[0]]"></el-input>
+                    <el-input v-if="item[1].data_type === 'int'" v-model.number="form[item[0]]"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -57,12 +63,16 @@
                 style="width: 100%"
                 height="100%"
             >
-                <el-table-column align="left" width="180" label="操作">
+                <el-table-column align="left" width="270" label="操作">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
                         @click="handleEdit(scope.row)">编辑</el-button>
-    
+                        
+                        <el-button
+                        size="mini"
+                        @click="handleDetial(scope.row)">详情</el-button>
+
                         <el-button
                         size="mini"
                         type="danger"
@@ -71,7 +81,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="content.name"
-                    label="档案名称"
+                    label="名称"
                     width="270">
                 </el-table-column>
                 <el-table-column
@@ -117,18 +127,22 @@ export default {
             page: 1,
             limit: 10, 
         },
+        editData: {},
       };
     },
     methods: {
-        submitTemplate(){
-            console.log('choose template:', this.templateForm.templateId)
-            this.dialogVisible = false
+        getTemplateById(templateId){
             for(let item of this.childTemplate ) {
-                if(item.main_id === this.templateForm.templateId){
-                    this.selectedChildTemplate = item
-                    break
+                if(item.main_id === templateId){
+                    return item
                 }
             }
+        },
+        submitTemplate(){
+            // console.log('choose template:', this.templateForm.templateId)
+            if(!this.templateForm.templateId) return
+            this.dialogVisible = false
+            this.selectedChildTemplate = this.getTemplateById(this.templateForm.templateId)
             // 利用整体替换使响应式能够识别form的修改
             var tmp = {}
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
@@ -136,21 +150,38 @@ export default {
             }
             this.form = tmp
             // console.log("form", this.form);
+            this.modalType = 0
             this.dataDialogVisible = true
         },
         submitData(){
             console.log('finished form', this.form);
-            const newName = getNewName()
-            let oriThis = this
-            postForm('data/add', {
-                path: this.$store.state.data.dataPath + '/' + newName,
-                template_id: this.templateForm.templateId,
-                content: this.form
-            }, (response) => {
-                console.log("add data: ", response);
-                oriThis.updateTableData()
-                oriThis.dataDialogVisible = false
-            })
+            if(this.modalType === 0){
+                const newName = getNewName()
+                let oriThis = this
+                postForm('data/add', {
+                    path: this.$store.state.data.dataPath + '/' + newName,
+                    template_id: this.templateForm.templateId,
+                    content: this.form
+                }, (response) => {
+                    console.log("add data: ", response);
+                    console.log(this.$store.state.data.dataPath, this.templateForm.templateId);
+                    oriThis.updateTableData()
+                    oriThis.dataDialogVisible = false
+                })
+            }
+            else{
+                let oriThis = this
+                postForm('data/update', {
+                    path: this.editData.path,
+                    template_id: this.editData.template_id,
+                    content: this.form,
+                    show_time: this.editData.show_time
+                }, (response) => {
+                    // console.log("update date", response);
+                    oriThis.updateTableData()
+                    oriThis.dataDialogVisible = false
+                })
+            }
         },
         handleClose(){
             // this.$refs.form.resetFields()
@@ -163,15 +194,16 @@ export default {
             console.log('child_template: ', this.childTemplate);
         },
         handleEdit(row){
-            // console.log(index, row);
-            const newRoute = {
-                name: 'Archives_item_1',
-                path: 'Archives/item_1',
+            console.log("edit ", row)
+            this.selectedChildTemplate = this.getTemplateById(row.template_id)
+            const tmp = {}
+            for(let item of Object.entries(this.selectedChildTemplate.structure)){
+                tmp[item[0]] = row.content[item[0]]
             }
-            // newRoute.component = () => import('./ArchivesItem')
-            console.log(newRoute);
-            // this.$router.addRoute('main', newRoute)
-            this.$router.push({name: 'archivesItem'})
+            this.form = tmp
+            this.editData = row
+            this.modalType = 1
+            this.dataDialogVisible = true
         },
         handleDelete(Index, row){
             this.$confirm('确认删除?', '提示', {
@@ -179,13 +211,26 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    deleteuser({id: row.id}).then(() => {
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                        this.updateTableData()
-                    });
+                    // console.log(row);
+                    let oriThis = this
+                    postForm('data/delete', {
+                        path: row.path,
+                        include_subtree: true,
+                    }, (response) => {
+                        if(response.code === 0){
+                            oriThis.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                            this.updateTableData()
+                        }
+                        else{
+                            oriThis.$message({
+                                type: 'info',
+                                message: response.msg
+                            });
+                        }
+                    })
                     
                 }).catch(() => {
                     this.$message({
@@ -193,6 +238,11 @@ export default {
                     message: '已取消删除'
                 });          
             });
+        },
+        handleDetial(row){
+            this.$store.commit('setDataPath', row.path)
+            this.$store.commit('setTemplateId', row.template_id)
+            location.reload()
         },
         handlePage(pageId){
             // console.log(pageId)
@@ -204,10 +254,10 @@ export default {
             this.total = 2
             this.tableData = []
             const tid = this.$store.state.data.templateId
-            // console.log('tid: ', this.$store.state.data)
+            console.log('tid: ', tid)
             let oriThis = this
             getChildNode(this.$store.state.data.dataPath, tid, (response) => {
-                // console.log("data item",response);
+                console.log("data item",response);
                 oriThis.tableData.push(response)
             })
         }
@@ -219,10 +269,10 @@ export default {
 
         let oriThis = this
         getChildTemplate(this.$store.state.data.templateId, (response) => {
-            // console.log('add childtemplate ', response);
+            console.log('add childtemplate ', response);
             oriThis.childTemplate.push(response)
         })
-        console.log(getNewName());
+
     }, 
   };
 </script> 

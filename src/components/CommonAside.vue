@@ -10,7 +10,7 @@
       active-text-color="#ffd04b"
     >
     <h3>{{ isCollapse ? "后台" : "后台管理系统" }}</h3>
-      <el-menu-item v-for="item in noChildren" :key="item.path" :index="item.path"
+      <el-menu-item v-for="item in noChildren" :key="item.dataPath" :index="item.dataPath"
         @click="clickMenu(item)"
       >
         <i :class="'el-icon-' + item.icon"></i>
@@ -22,7 +22,7 @@
           <i :class="'el-icon-' + item.icon"></i>
           <span slot="title">{{item.label}}</span>
         </template>
-        <el-menu-item-group v-for="subItem in item.children" :key="subItem.path">
+        <el-menu-item-group v-for="subItem in item.children" :key="subItem.dataPath">
           <el-menu-item :index="subItem.path"
             @click="clickMenu(subItem)"
           >
@@ -70,18 +70,22 @@ export default {
           console.log(key, keyPath);
       },
       clickMenu(item){
-        
-        if(this.$route.path !== item.routePath){
+        // console.log(item.path);
+        if(this.$route.path !== item.path){
           this.$router.push(item.path)
         }
-        else if(item.routePath === '/node'){
+        else
+        {
           if(item.dataPath !== this.$store.state.data.dataPath){
-            this.$router.push(item.path)            
+            this.$store.commit('setTemplateId', item.templateId)
+            this.$store.commit('setDataPath', item.dataPath)
+            this.$store.commit('selectMenu', item)
           }
+          return
         }
         this.$store.commit('setTemplateId', item.templateId)
         this.$store.commit('setDataPath', item.dataPath)
-        this.$store.commit('selectMenu', item)
+        // this.$store.commit('selectMenu', item)
       }
     },
     computed:{

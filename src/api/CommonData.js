@@ -74,11 +74,15 @@ export const getChildNode = (path, templateId, callback) => {
         if(response.code === 0){
             const childTemplate = response.data.children_template_limit
             // console.log('templateid: ', childTemplate);
+            if(childTemplate.indexOf(0) !== -1) {
+                // console.log('template limit 0');
+                return {}
+            }
             childTemplate.forEach(item => {
                 const requestData = {
                     "location_id": 99999999,
                     "page_index": 1,
-                    "page_size": 15,
+                    "page_size": 10,
                     "sort_by": "-show_time",
                     "path": path,
                     "deep_range": 0,
@@ -90,12 +94,9 @@ export const getChildNode = (path, templateId, callback) => {
                     "template_id": item
                 }
                 postForm('/data/list', requestData, (response) => {
-                    // console.log(response);
+                    console.log("data one", response);
                     response.data.list.forEach((item) => {
-                        postForm('/data/node', {'path': item.path}, (response) => {
-                            // console.log(response);
-                            callback(response.data)
-                        })
+                            callback(item)
                     })
                 })
             });

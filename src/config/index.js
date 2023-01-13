@@ -1,5 +1,9 @@
 const templateId = {
     archivesTemplateId: 8,
+    pictureTemplateId: 12,
+    interviewTemplateId: 13,
+    ancientBookTemplateId: 14,
+    reservationTemplateId: 15,
 }
 
 export default {
@@ -24,33 +28,45 @@ export default {
             children: [
                 {
                     dataPath: 'root/archives',
-                    path: '/node',
+                    // path: '/node',
+                    path: '/archives',
                     name: 'archives',
                     label: '档案/手稿',
-                    icon: 'video-play',
-                    url: 'components/CommonNode',
+                    // url: 'components/CommonNode',
+                    url: 'views/Archives/Archives',
                     templateId: templateId.archivesTemplateId
                 },
                 {
+                    dataPath: 'root/picture',
                     path: '/picture',
                     name: 'picture',
                     label: '照片/图像',
-                    icon: 'video-play',
-                    url: 'Picture/Picture'
+                    url: 'views/Picture/Picture',
+                    templateId: templateId.pictureTemplateId
                 },
                 {
-                    path: '/book',
-                    name: 'book',
-                    label: '古籍/特藏',
-                    icon: 'video-play',
-                    url: 'Book/Book'
-                },
-                {
+                    dataPath: 'root/interview',
                     path: '/interview',
                     name: 'interview',
-                    label: '照片/图像',
-                    icon: 'video-play',
-                    url: 'Interview/Interview'
+                    label: '口述/访谈',
+                    url: 'views/Interview/Interview',
+                    templateId: templateId.interviewTemplateId
+                },
+                {
+                    dataPath: 'root/ancient_book',
+                    path: '/ancient_book',
+                    name: 'ancient_book',
+                    label: '古籍',
+                    url: 'views/Book/Book',
+                    templateId: templateId.ancientBookTemplateId
+                },
+                {
+                    dataPath: 'root/reservation',
+                    path: '/reservation',
+                    name: 'reservation',
+                    label: '特藏',
+                    url: 'views/Reservation/Reservation',
+                    templateId: templateId.reservationTemplateId
                 },
             ]
         },
