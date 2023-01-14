@@ -3,7 +3,11 @@
         <div class="manageHeader">
             <el-button type="primary" @click="handleAdd"> +新增</el-button>
         </div>
-    
+        
+        <PictureForm :content="uploadPictureData.content" :visible="uploadPictureData.visible"
+            @finishUpload="finishUpload"
+        >
+        </PictureForm>
         <el-dialog
             title="选择模板"
             :visible.sync="dialogVisible"
@@ -35,7 +39,7 @@
         </el-dialog>
 
         <el-dialog
-            title="新增数据"
+            title="数据"
             :visible.sync="dataDialogVisible"
             width="50%"
             :before-close="handleClose"
@@ -51,6 +55,7 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="uploadPicture">上传图片</el-button>
                 <el-button @click="handleClose">取 消</el-button>
                 <el-button type="primary" @click="submitData">确 定</el-button>
             </span>
@@ -105,6 +110,7 @@
 <script>
 import {getChildTemplate, getChildNode, postForm} from '../api/CommonData.js'
 import {getNewName} from '../utils/name'
+import PictureForm from './PictureForm.vue';
 
 export default {
     data() {
@@ -128,6 +134,10 @@ export default {
             limit: 10, 
         },
         editData: {},
+        uploadPictureData:{
+            content: {},
+            visible: false,
+        }
       };
     },
     methods: {
@@ -194,8 +204,8 @@ export default {
             console.log('child_template: ', this.childTemplate);
         },
         handleEdit(row){
-            console.log("edit ", row)
             this.selectedChildTemplate = this.getTemplateById(row.template_id)
+            console.log("edit ", row, this.selectedChildTemplate)
             const tmp = {}
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
                 tmp[item[0]] = row.content[item[0]]
@@ -255,6 +265,17 @@ export default {
 
             // this.getUserList()
         },
+        uploadPicture(){
+            console.log("upload Pic");
+            this.uploadPictureData.content = this.selectedChildTemplate.structure
+            this.uploadPictureData.visible = true
+        },
+        finishUpload(response){
+            console.log('finishUpload');
+            this.uploadPictureData.visible = false
+            if(response.code !== 0) return
+            this.form[response.data.rel] = response.data.val
+        },
         updateTableData(){
             this.total = 2
             this.tableData = []
@@ -266,6 +287,9 @@ export default {
                 oriThis.tableData.push(response)
             })
         }
+    },
+    components:{
+        PictureForm
     },
     mounted(){
         console.log('node mounted');

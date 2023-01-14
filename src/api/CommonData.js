@@ -45,14 +45,14 @@ export const getTemplateInfo = (templateId, callback) => {
 
 export const postForm = (url, data, callback) => {
     const token = Cookie.get('token')
-    console.log('post: ', data);
+    // console.log('postForm 的表单: ',url , data);
     http.request({
         method: "post",
         url: baseURL + url,
         headers: {token: token},
         data: data
     }).then((response) => {
-        console.log("response: ", response);
+        console.log("postForm 的 response: ", response);
         callback(response.data)
     })
 }
@@ -83,7 +83,7 @@ export const getChildNode = (path, templateId, callback) => {
                 const requestData = {
                     "location_id": 99999999,
                     "page_index": 1,
-                    "page_size": 10,
+                    "page_size": 1000,
                     "sort_by": "-show_time",
                     "path": path,
                     "deep_range": 0,
