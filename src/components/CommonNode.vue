@@ -242,6 +242,11 @@ export default {
         handleDetial(row){
             this.$store.commit('setDataPath', row.path)
             this.$store.commit('setTemplateId', row.template_id)
+            this.$store.commit('addTag', {
+                label: row.content.name,
+                templateId: row.template_id,
+                dataPath: row.path
+            })
             location.reload()
         },
         handlePage(pageId){

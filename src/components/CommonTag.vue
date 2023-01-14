@@ -3,10 +3,9 @@
         <el-tag
             v-for=" (item, index) in tags"
             :key="item.path"
-            :closable="item.path !== '/'"
-            :effect="$route.name === item.name ? 'dark' : 'plain'"
+            :effect="$store.state.tab.showingIndex === index ? 'dark' : 'plain'"
             size="small"
-            @click="changeTag(item)"
+            @click="changeTag(item, index)"
             @close="closeTag(item, index)"
         >
             {{item.label}}
@@ -24,8 +23,11 @@ export default {
       };
     },
     methods: {
-        changeTag(item){
-            this.$router.push(item.path)
+        changeTag(item, index){
+            this.$store.commit('setTemplateId', item.templateId)
+            this.$store.commit('setDataPath', item.dataPath)
+            this.$store.commit('setIndex', index)
+            location.reload()
         },
         closeTag(item, index){
             this.$store.commit('closeTag', item)  

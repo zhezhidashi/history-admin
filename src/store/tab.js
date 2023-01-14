@@ -4,14 +4,8 @@ export default {
     state: {
         isCollapse: false, // 控制菜单的展开与收起
         tabsList: [
-            {
-                path: '/',
-                name: 'home',
-                label: '首页',
-                icon: 's-home',
-                url: 'Home/Home'
-            },
         ], // 面包屑数据
+        showingIndex: 0,
         menu: [],
     },
     mutations: {
@@ -22,15 +16,19 @@ export default {
         // 更改面包屑数据
         selectMenu(state, val) {
             // console.log(val);
-            if(val.name !== 'home'){
-                const index = state.tabsList.findIndex(item => item.name === val.name)
-                if(index === -1){
-                    state.tabsList.push(val)
-                }
-            }
+            state.tabsList = [val]
+            state.showingIndex = 0
+        },
+        addTag(state, val){
+            state.tabsList = state.tabsList.slice(0, state.showingIndex+1)
+            state.tabsList.push(val)
+            state.showingIndex += 1
+        },
+        setIndex(state, val){
+            state.showingIndex = val
         },
         closeTag(state, item){
-            const index = state.tabsList.findIndex(T => T.name === item.name)
+            const index = state.tabsList.findIndex(T => T.label === item.label)
             state.tabsList.splice(index, 1)
         },
         setMenu(state, val){

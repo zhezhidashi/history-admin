@@ -45,14 +45,15 @@ export const getTemplateInfo = (templateId, callback) => {
 
 export const postForm = (url, data, callback) => {
     const token = Cookie.get('token')
-    // console.log('post: ', data);
+    console.log('post: ', data);
     http.request({
         method: "post",
         url: baseURL + url,
         headers: {token: token},
         data: data
-    }).then(({data: response}) => {
-        callback(response)
+    }).then((response) => {
+        console.log("response: ", response);
+        callback(response.data)
     })
 }
 

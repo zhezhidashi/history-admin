@@ -71,20 +71,19 @@ export default {
       },
       clickMenu(item){
         // console.log(item.path);
+        if(this.$route.path === item.path && item.dataPath === this.$store.state.data.dataPath){
+          return
+        }
         if(this.$route.path !== item.path){
           this.$router.push(item.path)
         }
-        else
-        {
-          if(item.dataPath !== this.$store.state.data.dataPath){
-            this.$store.commit('setTemplateId', item.templateId)
-            this.$store.commit('setDataPath', item.dataPath)
-            this.$store.commit('selectMenu', item)
-          }
-          return
-        }
         this.$store.commit('setTemplateId', item.templateId)
         this.$store.commit('setDataPath', item.dataPath)
+        this.$store.commit('selectMenu', {
+          label: item.label,
+          templateId: item.templateId,
+          dataPath:  item.dataPath
+        })
         // this.$store.commit('selectMenu', item)
       }
     },
