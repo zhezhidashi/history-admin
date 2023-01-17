@@ -201,11 +201,11 @@ export default {
         handleAdd(){
             this.modalType = 0
             this.dialogVisible = true
-            console.log('child_template: ', this.childTemplate);
+            // console.log('child_template: ', this.childTemplate);
         },
         handleEdit(row){
             this.selectedChildTemplate = this.getTemplateById(row.template_id)
-            console.log("edit ", row, this.selectedChildTemplate)
+            // console.log("edit ", row, this.selectedChildTemplate)
             const tmp = {}
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
                 tmp[item[0]] = row.content[item[0]]
@@ -280,10 +280,9 @@ export default {
             this.total = 2
             this.tableData = []
             const tid = this.$store.state.data.templateId
-            console.log('tid: ', tid)
             let oriThis = this
             getChildNode(this.$store.state.data.dataPath, tid, (response) => {
-                console.log("data item",response);
+                // console.log("data item",response);
                 oriThis.tableData.push(response)
             })
         }
@@ -292,13 +291,13 @@ export default {
         PictureForm
     },
     mounted(){
-        console.log('node mounted');
+        // console.log('node mounted');
         this.updateTableData()
         this.childTemplate.clear
 
         let oriThis = this
         getChildTemplate(this.$store.state.data.templateId, (response) => {
-            console.log('add childtemplate ', response);
+            // console.log('add childtemplate ', response);
             oriThis.childTemplate.push(response)
         })
 

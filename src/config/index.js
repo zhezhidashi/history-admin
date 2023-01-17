@@ -75,32 +75,46 @@ export default {
           icon: 'location',
           children: [
             {
-                path: '/archives',
-                name: 'archives',
+                dataPath: 'root/archives',
+                // path: '/node',
+                path: '/template/archives',
+                name: 'archivesT',
                 label: '档案/手稿',
-                icon: 'video-play',
-                url: 'Archives/Archives'
+                // url: 'components/CommonNode',
+                url: 'views/Template/Archives/ArchivesT',
+                templateId: templateId.archivesTemplateId
             },
             {
-                path: '/picture',
-                name: 'picture',
+                dataPath: 'root/picture',
+                path: '/template/picture',
+                name: 'pictureT',
                 label: '照片/图像',
-                icon: 'video-play',
-                url: 'Picture/Picture'
+                url: 'views/Template/Picture/PictureT',
+                templateId: templateId.pictureTemplateId
             },
             {
-                path: '/book',
-                name: 'book',
-                label: '古籍/特藏',
-                icon: 'video-play',
-                url: 'Book/Book'
+                dataPath: 'root/interview',
+                path: '/template/interview',
+                name: 'interviewT',
+                label: '口述/访谈',
+                url: 'views/Template/Interview/InterviewT',
+                templateId: templateId.interviewTemplateId
             },
             {
-                path: '/interview',
-                name: 'interview',
-                label: '照片/图像',
-                icon: 'video-play',
-                url: 'Interview/Interview'
+                dataPath: 'root/ancient_book',
+                path: '/template/ancient_book',
+                name: 'ancient_book',
+                label: '古籍',
+                url: 'views/Template/Book/BookT',
+                templateId: templateId.ancientBookTemplateId
+            },
+            {
+                dataPath: 'root/reservation',
+                path: '/template/reservation',
+                name: 'reservation',
+                label: '特藏',
+                url: 'views/Template/Reservation/ReservationT',
+                templateId: templateId.reservationTemplateId
             },
         ]
         }
