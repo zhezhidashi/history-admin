@@ -16,13 +16,6 @@ export default {
             url: 'views/Home'
         },
         {
-            path: '/user',
-            name: 'user',
-            label: '用户管理',
-            icon: 'user',
-            url: 'views/User'
-        },
-        {
             label: '内容管理',
             icon: 's-order',
             children: [
@@ -72,7 +65,7 @@ export default {
         },
         {
           label: '模板管理',
-          icon: 'location',
+          icon: 's-order',
           children: [
             {
                 dataPath: 'root/archives',
@@ -103,7 +96,7 @@ export default {
             {
                 dataPath: 'root/ancient_book',
                 path: '/template/ancient_book',
-                name: 'ancient_book',
+                name: 'ancient_bookT',
                 label: '古籍',
                 url: 'views/Template/Book/BookT',
                 templateId: templateId.ancientBookTemplateId
@@ -111,7 +104,7 @@ export default {
             {
                 dataPath: 'root/reservation',
                 path: '/template/reservation',
-                name: 'reservation',
+                name: 'reservationT',
                 label: '特藏',
                 url: 'views/Template/Reservation/ReservationT',
                 templateId: templateId.reservationTemplateId

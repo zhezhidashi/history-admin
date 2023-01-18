@@ -52,6 +52,7 @@
                 >
                     <el-input v-if="item[1].data_type === 'str'" v-model="form[item[0]]"></el-input>
                     <el-input v-if="item[1].data_type === 'int'" v-model.number="form[item[0]]"></el-input>
+                    <el-input v-if="item[1].data_type === 'float'" v-model.number="form[item[0]]"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">

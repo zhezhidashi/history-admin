@@ -20,14 +20,15 @@
                     <el-select v-model="form.data_type">
                         <el-option label="文本|图片" value="str"></el-option>
                         <el-option label="整数" value="int"></el-option>
+                        <el-option label="小数" value="float"></el-option>
                     </el-select>
                 </el-form-item>
                 <h4 style="text-align:center">若数据类型为整数,请填写最大最小值,填0为不限</h4>
-                <el-form-item label="最大值" prop="max">
-                    <el-input v-model.number="form.max"></el-input>
-                </el-form-item>
                 <el-form-item label="最小值" prop="min">
                     <el-input v-model.number="form.min"></el-input>
+                </el-form-item>
+                <el-form-item label="最大值" prop="max">
+                    <el-input v-model.number="form.max"></el-input>
                 </el-form-item>
                 <el-form-item label="属性是否必填" prop="require">
                     <el-select v-model="form.require">

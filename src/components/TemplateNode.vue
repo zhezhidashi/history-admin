@@ -8,7 +8,7 @@
             @submitAttr="submitAttr"
         ></TemplateAttrForm>
         <el-dialog
-            title="新增模板"
+            title="模板"
             :visible.sync="dialogVisible"
             width="50%"
             :before-close="handleClose"
@@ -26,7 +26,7 @@
                 <h4 style="text-align:center">模板属性(默认属性：名称 说明)</h4>
                 <el-form-item v-for="(item, index) of form.templateAttribute"
                     :key="item.show_name"
-                    :label="item.show_name + `(${item.data_type === 'str'? '文本': '整数'})`"
+                    :label="item.show_name + `(${data_type_name[item.data_type]})`"
                 >
                     <el-button v-if="modalType === 0" type="primary" @click="editAttr(index)"> 编辑</el-button>
                     <el-button v-if="modalType === 0" type="primary" @click="deleteAttr(index)"> 删除</el-button>
@@ -81,8 +81,8 @@
 </template>
 
 <script>
-import {getChildTemplate, getChildNode, postForm} from '../api/CommonData.js'
-import {getNewName} from '../utils/name'
+import {getChildTemplate, getTemplateInfo, postForm,} from '../api/CommonData.js'
+import { updateTemplate, createTemplate } from '../api/CommonData.js';
 import TemplateAttrForm from './TemplateAttrForm.vue';
 
 export default {
@@ -103,6 +103,13 @@ export default {
                 {required: true, message:"请输入模板名称", trigger: 'blur'}
             ]
         },
+        data_type_name:{
+            "str": "文本",
+            "int": "整数",
+            "float": "小数"
+        },
+        templateInfo:{},
+        editTemplate:{},
         tableData: [],
         modalType: 0,
         total: 0,
@@ -131,11 +138,54 @@ export default {
                     console.log('finished form', this.form);
                     if(this.modalType === 0){
                         console.log(this.form.templateAttribute);
+                        var requestData = {
+                            name: this.form.name, 
+                            structure: {},
+                            children_template_limit: [0],
+                            brother_use_limit: 0
+
+                        }
+                        requestData.structure.name = {
+                            show_name: "名称",
+                            data_type: "str",
+                            min: 0,
+                            max: 0,
+                            require: true
+                        }
+                        requestData.structure.describe = {
+                            show_name: "说明",
+                            data_type: "str",
+                            min: 0,
+                            max: 0,
+                            require: true
+                        }
+                        const length = this.form.templateAttribute.length
+                        for(let i=0; i<length; ++i){
+                            requestData.structure['attr' + i] = this.form.templateAttribute[i]
+                        }
+                        console.log('template data: ', requestData);
+                        console.log('father template: ', this.templateInfo);
+                        
+                        createTemplate(this.templateInfo, requestData, this)
                     }
                     else{
-                        
+                        let oriThis = this
+                        const requestData = {
+                            name: this.form.name,
+                        }
+                        updateTemplate(this.editTemplate, requestData, (response) => {
+                            if(response.code !== 0){
+                                this.$message({
+                                    message: response.msg,
+                                    type: "error"
+                                })
+                            }
+                            else {
+                                oriThis.updateTableData()
+                            }
+                        })
                     }
-                    // this.dialogVisible = flase
+                    this.dialogVisible = false
                 }
             })
         },
@@ -159,6 +209,7 @@ export default {
             }
             this.form = {name: row.name, templateAttribute: tmp}
             this.modalType = 1
+            this.editTemplate = row
             this.dialogVisible = true
         },
         handleDelete(Index, row){
@@ -167,26 +218,6 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                // console.log(row);
-                let oriThis = this
-                postForm('data/delete', {
-                    path: row.path,
-                    include_subtree: true,
-                }, (response) => {
-                    if(response.code === 0){
-                        oriThis.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                        this.updateTableData()
-                    }
-                    else{
-                        oriThis.$message({
-                            type: 'info',
-                            message: response.msg
-                        });
-                    }
-                })
                 
             }).catch(() => {
                 this.$message({
@@ -226,7 +257,7 @@ export default {
         submitAttr(response){
             this.attributeData.visible = false
             if(response.code !== 0) return
-            console.log('finishUploadAttr', response.data);
+            // console.log('finishUploadAttr', response.data);
             if(this.attributeData.editIndex === -1) this.form.templateAttribute.push(response.data)
             else this.form.templateAttribute.splice(this.attributeData.editIndex, 1, response.data)
         },
@@ -244,8 +275,12 @@ export default {
             const tid = this.$store.state.data.templateId
             let oriThis = this
             getChildTemplate(tid, (response) => {
-                console.log('add childtemplate ', response);
+                // console.log('add childtemplate ', response);
                 oriThis.tableData.push(response)
+            })
+            getTemplateInfo(tid, (response) => {
+                // console.log("templateInfo: ", response);
+                this.templateInfo = response.data
             })
         }
     },
@@ -253,7 +288,7 @@ export default {
         TemplateAttrForm
     },
     mounted(){
-        console.log('node mounted');
+        // console.log('node mounted');
         this.updateTableData()
     }, 
   };

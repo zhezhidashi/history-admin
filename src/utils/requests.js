@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const baseURL = ''
+// const baseURL = '/'
 
 const http = axios.create({
-    baseURL: baseURL,
     timeout: 10000,
 })
 

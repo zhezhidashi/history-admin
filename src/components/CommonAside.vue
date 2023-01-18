@@ -102,8 +102,8 @@ export default {
       }
     },
     mounted(){
-      console.log('Menu: ', this.menu);
-      console.log('Vue: ', this);
+      // console.log('Menu: ', this.menu);
+      // console.log('Vue: ', this);
     }
 }
 </script>
