@@ -56,10 +56,10 @@
                         size="mini"
                         @click="handleDetial(scope.row)">详情</el-button>
 
-                        <el-button
+                        <!-- <el-button
                         size="mini"
                         type="danger"
-                        @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                        @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -135,9 +135,9 @@ export default {
         submitData(){
             this.$refs.form.validate((valid) => {
                 if(valid){
-                    console.log('finished form', this.form);
+                    // console.log('finished form', this.form);
                     if(this.modalType === 0){
-                        console.log(this.form.templateAttribute);
+                        // console.log(this.form.templateAttribute);
                         var requestData = {
                             name: this.form.name, 
                             structure: {},
@@ -163,8 +163,8 @@ export default {
                         for(let i=0; i<length; ++i){
                             requestData.structure['attr' + i] = this.form.templateAttribute[i]
                         }
-                        console.log('template data: ', requestData);
-                        console.log('father template: ', this.templateInfo);
+                        // console.log('template data: ', requestData);
+                        // console.log('father template: ', this.templateInfo);
                         
                         createTemplate(this.templateInfo, requestData, this)
                     }
@@ -182,10 +182,10 @@ export default {
                             }
                             else {
                                 oriThis.updateTableData()
+                                this.dialogVisible = false
                             }
                         })
                     }
-                    this.dialogVisible = false
                 }
             })
         },

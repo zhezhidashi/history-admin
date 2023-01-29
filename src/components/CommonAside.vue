@@ -7,7 +7,7 @@
       :collapse="isCollapse"
       background-color="#545c64"
       text-color="#fff"
-      active-text-color="#ffd04b"
+      active-text-color="#fff"
     >
     <h3>{{ isCollapse ? "后台" : "后台管理系统" }}</h3>
       <el-menu-item v-for="item in noChildren" :key="item.dataPath" :index="item.dataPath"

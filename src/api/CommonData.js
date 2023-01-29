@@ -2,8 +2,8 @@ import http from "../utils/requests";
 import Cookie from 'js-cookie'
 import config from '../config'
 
-// const baseURL = '/api'
-const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
+const baseURL = '/api'
+// const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
 
 export const getArchivesList = () => {
     return {
@@ -31,6 +31,19 @@ export const getArchivesItemList = () => {
             },
         ]
     }
+}
+
+export const getForm  = (url, callback) => {
+    const token = Cookie.get('token')
+    console.log('getForm 的表单: ',url);
+    http.request({
+        method: "get",
+        url: baseURL + url,
+        headers: {token: token},
+    }).then((response) => {
+        console.log("getForm 的 response: ", response);
+        callback(response.data)
+    })
 }
 
 export const getTemplateInfo = (templateId, callback) => {
@@ -74,13 +87,19 @@ export const getChildTemplate = (templateId, callback) => {
 export const getChildNode = (path, templateId, callback) => {
     getTemplateInfo(templateId, (response) => {
         // console.log(response);
-        response.code = 0
+        // response.code = 0
         if(response.code === 0){
             const childTemplate = response.data.children_template_limit
             // console.log('templateid: ', childTemplate);
             if(childTemplate.indexOf(0) !== -1) {
                 // console.log('template limit 0');
-                return {}
+                callback({
+                    code: 0,
+                    data:{
+                        list: [],
+                    }
+                })
+                return
             }
             childTemplate.forEach(item => {
                 const requestData = {
@@ -98,10 +117,10 @@ export const getChildNode = (path, templateId, callback) => {
                     "template_id": item
                 }
                 postForm('data/list', requestData, (response) => {
-                    // console.log("data one", response);
-                    response.data.list.forEach((item) => {
-                            callback(item)
-                    })
+                    // response.data.list.forEach((item) => {
+                    //         callback(item)
+                    // })
+                    callback(response)
                 })
             });
         }
@@ -114,25 +133,34 @@ export const getChildNode = (path, templateId, callback) => {
 
 export const createTemplate = (fatherTemplate, data, oriThis) => {
     postForm('template/add', data, (response) => {
-        const newId = response.data.main_id
-        const requestData = {
-            main_id: fatherTemplate.main_id,
-            show_time: fatherTemplate.show_time,
-            name: fatherTemplate.name,
-            children_template_limit: fatherTemplate.children_template_limit,
-            brother_use_limit: fatherTemplate.brother_use_limit
-        }
-        if(requestData.children_template_limit.indexOf(newId) === -1){
-            const indexOf0 = requestData.children_template_limit.indexOf(0)
-            if(indexOf0 !== -1) {
-                requestData.children_template_limit.splice(indexOf0, 1, newId)
+        if(response.code === 0){
+            const newId = response.data.main_id
+            const requestData = {
+                main_id: fatherTemplate.main_id,
+                show_time: fatherTemplate.show_time,
+                name: fatherTemplate.name,
+                children_template_limit: fatherTemplate.children_template_limit,
+                brother_use_limit: fatherTemplate.brother_use_limit
             }
-            else requestData.children_template_limit.push(newId)
+            if(requestData.children_template_limit.indexOf(newId) === -1){
+                const indexOf0 = requestData.children_template_limit.indexOf(0)
+                if(indexOf0 !== -1) {
+                    requestData.children_template_limit.splice(indexOf0, 1, newId)
+                }
+                else requestData.children_template_limit.push(newId)
+            }
+            // console.log("in createTmplate: ", requestData);
+            postForm('template/update', requestData, (response) => {
+                oriThis.updateTableData()
+            })
+            oriThis.dialogVisible = false
         }
-        // console.log("in createTmplate: ", requestData);
-        postForm('template/update', requestData, (response) => {
-            oriThis.updateTableData()
-        })
+        else{
+            oriThis.$message({
+                message: response.msg,
+                type: "error"
+            })
+        }
     })
 }
 
@@ -157,7 +185,7 @@ export const login = (data, oriThis) => {
     }).then(({data: response}) => {
         if(response.code === 0){
             const menu = config.mainMenu
-            console.log('login-response: ', response);
+            // console.log('login-response: ', response);
             Cookie.set('token', response.data),
             oriThis.$store.commit('setMenu', menu)
             oriThis.$store.commit('addMenu', oriThis.$router)

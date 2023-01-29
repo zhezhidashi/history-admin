@@ -52,7 +52,7 @@
                 >
                     <el-input v-if="item[1].data_type === 'str'" v-model="form[item[0]]"></el-input>
                     <el-input v-if="item[1].data_type === 'int'" v-model.number="form[item[0]]"></el-input>
-                    <el-input v-if="item[1].data_type === 'float'" v-model.number="form[item[0]]"></el-input>
+                    <el-input v-if="item[1].data_type === 'float'" v-model="form[item[0]]"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -165,7 +165,7 @@ export default {
             this.dataDialogVisible = true
         },
         submitData(){
-            console.log('finished form', this.form);
+            // console.log('finished form', this.form);
             if(this.modalType === 0){
                 const newName = getNewName()
                 let oriThis = this
@@ -175,9 +175,17 @@ export default {
                     content: this.form
                 }, (response) => {
                     console.log("add data: ", response);
-                    console.log(this.$store.state.data.dataPath, this.templateForm.templateId);
-                    oriThis.updateTableData()
-                    oriThis.dataDialogVisible = false
+                    if(response.code === 0){
+                        console.log(this.$store.state.data.dataPath, this.templateForm.templateId);
+                        oriThis.updateTableData()
+                        oriThis.dataDialogVisible = false
+                    }
+                    else{
+                        oriThis.$message({
+                            message: response.msg,
+                            type: "error"
+                        })
+                    }
                 })
             }
             else{
@@ -189,8 +197,16 @@ export default {
                     show_time: this.editData.show_time
                 }, (response) => {
                     // console.log("update date", response);
-                    oriThis.updateTableData()
-                    oriThis.dataDialogVisible = false
+                    if(response.code === 0){
+                        oriThis.updateTableData()
+                        oriThis.dataDialogVisible = false
+                    }
+                    else{
+                        oriThis.$message({
+                            message: response.msg,
+                            type: "error"
+                        })
+                    }
                 })
             }
         },
@@ -267,12 +283,12 @@ export default {
             // this.getUserList()
         },
         uploadPicture(){
-            console.log("upload Pic");
+            // console.log("upload Pic");
             this.uploadPictureData.content = this.selectedChildTemplate.structure
             this.uploadPictureData.visible = true
         },
         finishUpload(response){
-            console.log('finishUpload');
+            // console.log('finishUpload');
             this.uploadPictureData.visible = false
             if(response.code !== 0) return
             this.form[response.data.rel] = response.data.val
@@ -284,7 +300,9 @@ export default {
             let oriThis = this
             getChildNode(this.$store.state.data.dataPath, tid, (response) => {
                 // console.log("data item",response);
-                oriThis.tableData.push(response)
+                for(let item of response.data.list){
+                    oriThis.tableData.push(item)
+                }
             })
         }
     },

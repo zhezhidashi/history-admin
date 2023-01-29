@@ -7,6 +7,7 @@ const templateId = {
 }
 
 export default {
+    submenuIndex: 3,
     mainMenu: [
         {
             path: '/home',
@@ -14,6 +15,20 @@ export default {
             label: '首页',
             icon: 's-home',
             url: 'views/Home'
+        },
+        {
+            path: '/user',
+            name: 'user',
+            label: '用户管理',
+            icon: 'user',
+            url: 'views/User/User'
+        },
+        {
+            path: '/user_group',
+            name: 'user_group',
+            label: '用户组管理',
+            icon: 'user-solid',
+            url: 'views/User/Group'
         },
         {
             label: '内容管理',
