@@ -9,7 +9,10 @@
         >
             <el-form ref="form" :model="form" label-width="80px">
                 <el-form-item label="路径">
-                    <el-cascader :props="props" v-model="form.path" @change="select"></el-cascader>
+                    <el-cascader :props="props" 
+                    v-model="form.path"
+                    :key="cascaderRebuild"
+                    ></el-cascader>
                 </el-form-item>
                 <el-form-item label="权限">
                     <el-checkbox-group v-model="form.permission">
@@ -97,21 +100,25 @@ export default {
         },
         showName: '',
         modalType: 0,
+        cascaderRebuild: 0,
       };
     },
     methods: {
-        select(a, b){
-            console.log("select", a, b);
-        },
         handleClose(){
             this.$emit('submitItem', {code:1})
         },
         submitData(){
-            console.log('form: ', this.form);
+            // console.log('form: ', this.form);
             if(this.form.path === ''){
                 this.$message({
                     message: '请选择路径',
                     type: 'error'
+                })
+                return
+            }
+            if(this.form.path.length === 0){
+                this.$emit('submitItem', {
+                    code: 1,
                 })
                 return
             }
@@ -123,6 +130,7 @@ export default {
                 '修改': 'u',
             }
             this.form.permission = this.form.permission.map(item => permissionMap[item])
+            this.cascaderRebuild ^= 1 // 更改cascader的key使其重新渲染
             this.$emit('submitItem', {
                 code: 0,
                 data: this.form

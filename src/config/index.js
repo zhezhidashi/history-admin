@@ -8,6 +8,14 @@ const templateId = {
 
 export default {
     submenuIndex: 3,
+    nameMap: {
+        'root/archives': '档案/手稿',
+        'root/picture': '照片/图像',
+        'root/interview': '口述/访谈',
+        'root/ancient_book': '古籍',
+        'root/reservation': '特藏',
+        'root': '全部数据'
+    },
     mainMenu: [
         {
             path: '/home',
