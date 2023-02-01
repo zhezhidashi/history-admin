@@ -134,5 +134,47 @@ export default {
             },
         ]
         }
+    ],
+    attributeInfo: [
+        {
+            showName: '标题',
+            pre: 'title',
+            dataType: 'str',
+        },
+        {
+            showName: '简介/描述',
+            pre: 'intro',
+            dataType: 'str',
+        },
+        {
+            showName: '文本',
+            pre: 'other',
+            dataType: 'str',
+        },
+        {
+            showName: '图片',
+            pre: 'img',
+            dataType: 'str',
+        },
+        {
+            showName: '视频',
+            pre: 'video',
+            dataType: 'str',
+        },
+        {
+            showName: '音频',
+            pre: 'audio',
+            dataType: 'str',
+        },
+        {
+            showName: '整数',
+            pre: 'other',
+            dataType: 'int',
+        },
+        {
+            showName: '小数',
+            pre: 'other',
+            dataType: 'float',
+        },
     ]
 }

@@ -26,7 +26,7 @@
                 <h4 style="text-align:center">模板属性(默认属性：名称 说明)</h4>
                 <el-form-item v-for="(item, index) of form.templateAttribute"
                     :key="item.show_name"
-                    :label="item.show_name + `(${data_type_name[item.data_type]})`"
+                    :label="item.show_name + `(${attrList[item.data_type].showName})`"
                 >
                     <el-button v-if="modalType === 0" type="primary" @click="editAttr(index)"> 编辑</el-button>
                     <el-button v-if="modalType === 0" type="primary" @click="deleteAttr(index)"> 删除</el-button>
@@ -84,6 +84,7 @@
 import {getChildTemplate, getTemplateInfo, postForm,} from '../api/CommonData.js'
 import { updateTemplate, createTemplate } from '../api/CommonData.js';
 import TemplateAttrForm from './TemplateAttrForm.vue';
+import config from '../config'
 
 export default {
     data() {
@@ -103,11 +104,6 @@ export default {
                 {required: true, message:"请输入模板名称", trigger: 'blur'}
             ]
         },
-        data_type_name:{
-            "str": "文本",
-            "int": "整数",
-            "float": "小数"
-        },
         templateInfo:{},
         editTemplate:{},
         tableData: [],
@@ -121,7 +117,8 @@ export default {
         uploadPictureData:{
             content: {},
             visible: false,
-        }
+        },
+        attrList: [],
       };
     },
     methods: {
@@ -161,7 +158,15 @@ export default {
                         }
                         const length = this.form.templateAttribute.length
                         for(let i=0; i<length; ++i){
-                            requestData.structure['attr' + i] = this.form.templateAttribute[i]
+                            const attrName = this.attrList[this.form.templateAttribute[i].data_type].pre + '&attr' + i
+                            const tmp = {
+                                show_name: this.form.templateAttribute[i].show_name,
+                                data_type: this.attrList[this.form.templateAttribute[i].data_type].dataType,
+                                min: this.form.templateAttribute[i].min,
+                                max: this.form.templateAttribute[i].max,
+                                require: this.form.templateAttribute[i].require
+                            }
+                            requestData.structure[attrName] = tmp
                         }
                         // console.log('template data: ', requestData);
                         // console.log('father template: ', this.templateInfo);
@@ -290,6 +295,7 @@ export default {
     mounted(){
         // console.log('node mounted');
         this.updateTableData()
+        this.attrList = config.attributeInfo
     }, 
   };
 </script> 

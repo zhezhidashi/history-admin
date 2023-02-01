@@ -18,9 +18,11 @@
                 </el-form-item>
                 <el-form-item label="数据类型" prop="data_type">
                     <el-select v-model="form.data_type">
-                        <el-option label="文本|图片" value="str"></el-option>
-                        <el-option label="整数" value="int"></el-option>
-                        <el-option label="小数" value="float"></el-option>
+                        <el-option v-for="(item, index) of attrList"
+                            :key="item.showName"
+                            :value="index"
+                            :label="item.showName"
+                        ></el-option>
                     </el-select>
                 </el-form-item>
                 <h4 style="text-align:center">若数据类型为整数,请填写最大最小值,填0为不限</h4>
@@ -47,6 +49,7 @@
 </template>
 
 <script>
+import config from '../config'
 export default {
     data(){
         return{
@@ -65,7 +68,8 @@ export default {
                 data_type:[
                     {required: true, message:"请选择数据类型", trigger:"blur"}
                 ],
-            }
+            },
+            attrList:[]
         }
     },
     methods:{
@@ -91,6 +95,9 @@ export default {
             this.form = newval
         },
     },
-    props:["content" ,"visible"]
+    props:["content" ,"visible"],
+    mounted() {
+        this.attrList = config.attributeInfo
+    },
 }
 </script>
