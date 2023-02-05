@@ -2,8 +2,8 @@ import http from "../utils/requests";
 import Cookie from 'js-cookie'
 import config from '../config'
 
-// const baseURL = '/api'
-const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
+const baseURL = '/api'
+// const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
 
 export const getArchivesList = () => {
     return {

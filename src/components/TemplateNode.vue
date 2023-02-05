@@ -129,6 +129,16 @@ export default {
                 }
             }
         },
+        getDataType(attrName, content){
+            const length = this.attrList.length
+            for(let i=0; i<length; ++i){
+                const substrindex = attrName.indexOf(this.attrList[i].pre)
+                if(substrindex !== -1) return i
+            }
+            if(content.data_type === 'str') return 2
+            if(content.data_type === 'int') return 6
+            if(content.data_type === 'float') return 7
+        },
         submitData(){
             this.$refs.form.validate((valid) => {
                 if(valid){
@@ -200,6 +210,7 @@ export default {
         },
         handleAdd(){
             this.form.name = ""
+            this.form.templateAttribute = []
             this.modalType = 0
             this.dialogVisible = true
             // console.log('child_template: ', this.childTemplate);
@@ -209,7 +220,13 @@ export default {
             var tmp = []
             for(let item of Object.entries(row.structure)){
                 if(item[0] !== 'describe' && item[0] !== 'name'){
-                    tmp.push(item[1])
+                    tmp.push({
+                        show_name: item[1].show_name,
+                        min: item[1].min,
+                        max: item[1].max,
+                        require: require,
+                        data_type: this.getDataType(item[0], item[1])
+                    })
                 }
             }
             this.form = {name: row.name, templateAttribute: tmp}
