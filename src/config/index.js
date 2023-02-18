@@ -4,6 +4,7 @@ const templateId = {
     interviewTemplateId: 13,
     ancientBookTemplateId: 14,
     reservationTemplateId: 15,
+    feedbackTemplateId: 39,
 }
 
 export default {
@@ -132,7 +133,14 @@ export default {
                 url: 'views/Template/Reservation/ReservationT',
                 templateId: templateId.reservationTemplateId
             },
-        ]
+            ]
+        },
+        {
+            path: '/feedback_list',
+            name: 'feedback',
+            label: '用户反馈',
+            icon: 's-comment',
+            url: 'views/Feedback/FeedbackList'
         }
     ],
     attributeInfo: [
@@ -176,5 +184,6 @@ export default {
             pre: 'other',
             dataType: 'float',
         },
-    ]
+    ],
+    templateId: templateId
 }

@@ -69,7 +69,7 @@
                 style="width: 100%"
                 height="100%"
             >
-                <el-table-column align="left" width="270" label="操作">
+                <el-table-column align="left" width="300" label="操作">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
@@ -83,6 +83,12 @@
                         size="mini"
                         type="danger"
                         @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+
+                        <el-button
+                        v-if="scope.$index !== 0"
+                        size="mini"
+                        type="primary"
+                        @click="handleMove(scope.$index)">上移</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -286,6 +292,37 @@ export default {
             })
             location.reload()
         },
+        handleMove(Index){
+            // console.log("Move", this.tableData[Index-1], this.tableData[Index])
+            const t1 = this.tableData[Index-1].show_time
+            const t2 = this.tableData[Index].show_time
+            const requestData1 = {
+                path: this.tableData[Index-1].path,
+                template_id: this.tableData[Index-1].template_id,
+                content: this.tableData[Index-1].content,
+                show_time: t2
+            }
+            const requestData2 = {
+                path: this.tableData[Index].path,
+                template_id: this.tableData[Index].template_id,
+                content: this.tableData[Index].content,
+                show_time: t1
+            }
+            let oriThis = this
+            postForm('data/update', requestData1, (response) => {
+                if(response.code === 0){
+                    postForm('data/update', requestData2, (response) => {
+                        oriThis.updateTableData()
+                    })
+                }
+                else{
+                    oriThis.$message({
+                        type: 'info',
+                        message: response.msg
+                    });
+                }
+            })
+        },
         handlePage(pageId){
             // console.log(pageId)
             this.pageConfig.page = pageId
@@ -313,6 +350,10 @@ export default {
                 for(let item of response.data.list){
                     oriThis.tableData.push(item)
                 }
+                // console.log('sort');
+                // oriThis.tableData = oriThis.tableData.sort(function(a, b){
+                //     console.log(a.content.name, b.content.name, a.show_time < b.show_time);
+                //     a.show_time < b.show_time ? -1 : 1})
             })
         }
     },

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '../views/Main.vue'
 import Login from '../views/Login'
+import Manual from '../views/Manual/Manual'
 import Cookie from 'js-cookie'
 
 Vue.use(VueRouter)
@@ -13,13 +14,23 @@ const routes = [
         component: Main,
         redirect: '/home',
         children: [
+            {
+                path: '/manual',
+                name: 'manual',
+                component: Manual
+            },
+            {
+                path: '/feedback_content',
+                name: 'feedback_content',
+                component: () => import('../views/Feedback/FeedbackContent.vue')
+            }
         ]
     },
     {
         name: 'login',
         path: '/login',
         component: Login,
-    }
+    },
 ]
 
 const router = new VueRouter({
