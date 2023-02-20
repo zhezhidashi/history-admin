@@ -141,7 +141,14 @@ export default {
             label: '用户反馈',
             icon: 's-comment',
             url: 'views/Feedback/FeedbackList'
-        }
+        },
+        {
+            path: '/recovery',
+            name: 'recovery',
+            label: '误删恢复(未完成)',
+            icon: 'delete-solid',
+            url: 'views/Recovery/Recovery.vue'
+        },
     ],
     attributeInfo: [
         {

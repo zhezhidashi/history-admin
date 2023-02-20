@@ -341,19 +341,32 @@ export default {
             this.form[response.data.rel] = response.data.val
         },
         updateTableData(){
-            this.total = 2
-            this.tableData = []
-            const tid = this.$store.state.data.templateId
+            const requestData = {
+                "location_id": 99999999,
+                "page_index": this.pageConfig.page,
+                "page_size": this.pageConfig.limit,
+                "sort_by": "-show_time",
+                "path": this.$store.state.data.dataPath,
+                "deep_range": 1,
+                "filter_rule": {},
+                "order_rule": {
+                    "method": "show_time",
+                    "order": "+"
+                },
+                "template_id": 0
+            }
             let oriThis = this
-            getChildNode(this.$store.state.data.dataPath, tid, (response) => {
-                // console.log("data item",response);
-                for(let item of response.data.list){
-                    oriThis.tableData.push(item)
+            postForm('data/list', requestData, (response) => {
+                if(response.code === 0){
+                    oriThis.tableData = response.data.list
+                    oriThis.total = response.data.total_items
                 }
-                // console.log('sort');
-                // oriThis.tableData = oriThis.tableData.sort(function(a, b){
-                //     console.log(a.content.name, b.content.name, a.show_time < b.show_time);
-                //     a.show_time < b.show_time ? -1 : 1})
+                else{
+                    oriThis.$message({
+                        type: 'info',
+                        message: response.msg
+                    });
+                }
             })
         }
     },

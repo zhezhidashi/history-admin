@@ -84,7 +84,7 @@ export default {
 				"page_size": this.pageConfig.limit,
 				"sort_by": "-show_time",
 				"path": "root/feedback_list",
-				"deep_range": 0,
+				"deep_range": 1,
 				"filter_rule": {},
 				"order_rule": {
 					"method": "show_time",
@@ -97,7 +97,7 @@ export default {
 			postForm('data/list', requestData, (response) => {
 				if(response.code === 0){
 					oriThis.tableData = response.data.list
-					oriThis.total = response.data.total_page
+					oriThis.total = response.data.total_items
 				}
 				else{
 					oriThis.$message({

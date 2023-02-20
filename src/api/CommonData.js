@@ -108,7 +108,7 @@ export const getChildNode = (path, templateId, callback) => {
                     "page_size": 1000,
                     "sort_by": "-show_time",
                     "path": path,
-                    "deep_range": 0,
+                    "deep_range": 1,
                     "filter_rule": {},
                     "order_rule": {
                         "method": "show_time",

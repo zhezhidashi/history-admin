@@ -56,10 +56,10 @@
                         size="mini"
                         @click="handleDetial(scope.row)">详情</el-button>
 
-                        <!-- <el-button
+                        <el-button
                         size="mini"
                         type="danger"
-                        @click="handleDelete(scope.$index, scope.row)">删除</el-button> -->
+                        @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -234,13 +234,46 @@ export default {
             this.editTemplate = row
             this.dialogVisible = true
         },
-        handleDelete(Index, row){
+        handleDelete(row){
             this.$confirm('确认删除?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                
+                // console.log('aaa', row, this.templateInfo);
+                let oriThis = this
+                postForm('template/delete', {main_id: row.main_id}, (response) => {
+                    if(response.code === 0){
+                        const requestData = {
+                            main_id: oriThis.templateInfo.main_id,
+                            show_time: oriThis.templateInfo.show_time,
+                            children_template_limit: oriThis.templateInfo.children_template_limit,
+                            name: oriThis.templateInfo.name,
+                            brother_use_limit: oriThis.templateInfo.brother_use_limit
+                        }
+                        const index = requestData.children_template_limit.indexOf(row.main_id)
+                        requestData.children_template_limit.splice(index, 1)
+                        // console.log('child_template', requestData.children_template_limit);
+                        postForm('template/update', requestData, (response) => {
+                            if(response.code === 0){
+                                oriThis.updateTableData()
+                            }
+                            else{
+                                oriThis.$message({
+                                    message: response.msg,
+                                    type: "error"
+                                })
+                            }
+                        })
+
+                    }
+                    else{
+                        oriThis.$message({
+                            message: response.msg,
+                            type: "error"
+                        })
+                    }
+                })
             }).catch(() => {
                 this.$message({
                     type: 'info',
