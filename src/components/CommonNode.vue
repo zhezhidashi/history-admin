@@ -4,10 +4,11 @@
             <el-button type="primary" @click="handleAdd"> +新增</el-button>
         </div>
         
-        <PictureForm :content="uploadPictureData.content" :visible="uploadPictureData.visible"
+        <FileForm :content="uploadFileData.content" :visible="uploadFileData.visible"
+            :type="uploadFileData.type"
             @finishUpload="finishUpload"
         >
-        </PictureForm>
+        </FileForm>
         <el-dialog
             title="选择模板"
             :visible.sync="dialogVisible"
@@ -56,7 +57,8 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="uploadPicture">上传图片</el-button>
+                <el-button type="primary" @click="uploadFile('picture')">上传图片</el-button>
+                <el-button type="primary" @click="uploadFile('media')">上传媒体文件</el-button>
                 <el-button @click="handleClose">取 消</el-button>
                 <el-button type="primary" @click="submitData">确 定</el-button>
             </span>
@@ -117,7 +119,7 @@
 <script>
 import {getChildTemplate, getChildNode, postForm} from '../api/CommonData.js'
 import {getNewName} from '../utils/name'
-import PictureForm from './PictureForm.vue';
+import FileForm from './FileForm.vue';
 
 export default {
     data() {
@@ -141,9 +143,10 @@ export default {
             limit: 10, 
         },
         editData: {},
-        uploadPictureData:{
+        uploadFileData:{
             content: {},
             visible: false,
+            type:''
         }
       };
     },
@@ -326,17 +329,15 @@ export default {
         handlePage(pageId){
             // console.log(pageId)
             this.pageConfig.page = pageId
-
-            // this.getUserList()
         },
-        uploadPicture(){
-            // console.log("upload Pic");
-            this.uploadPictureData.content = this.selectedChildTemplate.structure
-            this.uploadPictureData.visible = true
+        uploadFile(type){
+            this.uploadFileData.content = this.selectedChildTemplate.structure
+            this.uploadFileData.visible = true
+            this.uploadFileData.type = type
         },
         finishUpload(response){
             // console.log('finishUpload');
-            this.uploadPictureData.visible = false
+            this.uploadFileData.visible = false
             if(response.code !== 0) return
             this.form[response.data.rel] = response.data.val
         },
@@ -371,7 +372,7 @@ export default {
         }
     },
     components:{
-        PictureForm
+        FileForm
     },
     mounted(){
         // console.log('node mounted');

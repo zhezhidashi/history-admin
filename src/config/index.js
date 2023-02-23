@@ -5,6 +5,7 @@ const templateId = {
     ancientBookTemplateId: 14,
     reservationTemplateId: 15,
     feedbackTemplateId: 39,
+    attrListTemplateId: 41,
 }
 
 export default {
@@ -145,9 +146,16 @@ export default {
         {
             path: '/recovery',
             name: 'recovery',
-            label: '误删恢复(未完成)',
+            label: '误删恢复',
             icon: 'delete-solid',
             url: 'views/Recovery/Recovery.vue'
+        },
+        {
+            path: '/attribute',
+            name: 'attribute',
+            label: '字段管理',
+            icon: 'share',
+            url: 'views/Attribute/Attribute.vue'
         },
     ],
     attributeInfo: [
