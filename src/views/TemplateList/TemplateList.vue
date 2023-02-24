@@ -1,14 +1,14 @@
 <template>
     <div class="userManage">
         <div class="manageHeader">
-            <el-button type="primary" @click="handleAdd"> +添加子模板</el-button>
+            <el-button type="primary" @click="handleAdd"> +新增</el-button>
         </div>
         <TemplateAttrForm :content="attributeData.val"
             :visible="attributeData.visible"
             @submitAttr="submitAttr"
         ></TemplateAttrForm>
         <el-dialog
-            title="模板"
+            title="新建模板"
             :visible.sync="dialogVisible"
             width="50%"
             :before-close="handleClose"
@@ -23,7 +23,7 @@
                 <el-form-item label="模板名称" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <h4 style="text-align:center">模板属性(默认属性：名称 说明)</h4>
+                <h4 style="text-align:center">模板属性(默认属性：名称)</h4>
                 <el-form-item v-for="(item, index) of form.templateAttribute"
                     :key="item.show_name"
                     :label="item.show_name + `(${attrList[item.data_type].showName})`"
@@ -46,21 +46,27 @@
                 style="width: 100%"
                 height="100%"
             >
-                <el-table-column align="left" width="500" label="操作">
+                <el-table-column align="left" width="200" label="操作">
                     <template slot-scope="scope">
                         <el-button
                         size="mini"
                         @click="handleEdit(scope.row)">编辑</el-button>
-                        
+
                         <el-button
                         size="mini"
-                        @click="handleDetial(scope.row)">详情</el-button>
+                        type="danger"
+                        @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
                     prop="name"
                     label="名称"
-                    width="500">
+                    width="360">
+                </el-table-column>
+                <el-table-column
+                    prop="create_time"
+                    label="创建时间"
+                    width="400">
                 </el-table-column>
             </el-table>
         </div>
@@ -76,10 +82,10 @@
 </template>
 
 <script>
-import {getChildTemplate, getTemplateInfo, postForm,} from '../api/CommonData.js'
-import { updateTemplate, createTemplate } from '../api/CommonData.js';
+import {getTemplateInfo, postForm, getForm} from '../../api/CommonData.js'
+import { updateTemplate } from '../../api/CommonData.js';
 import TemplateAttrForm from './TemplateAttrForm.vue';
-import config from '../config'
+import config from '../../config'
 
 export default {
     data() {
@@ -109,10 +115,6 @@ export default {
             limit: 10, 
         },
         editData: {},
-        uploadPictureData:{
-            content: {},
-            visible: false,
-        },
         attrList: [],
       };
     },
@@ -154,13 +156,6 @@ export default {
                             max: 0,
                             require: true
                         }
-                        requestData.structure.describe = {
-                            show_name: "说明",
-                            data_type: "str",
-                            min: 0,
-                            max: 0,
-                            require: true
-                        }
                         const length = this.form.templateAttribute.length
                         for(let i=0; i<length; ++i){
                             const attrName = this.attrList[this.form.templateAttribute[i].data_type].pre + '&attr' + i
@@ -176,7 +171,19 @@ export default {
                         // console.log('template data: ', requestData);
                         // console.log('father template: ', this.templateInfo);
                         
-                        createTemplate(this.templateInfo, requestData, this)
+                        let oriThis = this
+                        postForm('template/add', requestData, (response) => {
+                            if(response.code === 0){
+                                oriThis.updateTableData()
+                                oriThis.dialogVisible = false
+                            }
+                            else{
+                                oriThis.$message({
+                                    type: 'warning',
+                                    $message: response.msg
+                                })
+                            }
+                        })
                     }
                     else{
                         let oriThis = this
@@ -211,7 +218,7 @@ export default {
             // console.log('child_template: ', this.childTemplate);
         },
         handleEdit(row){
-            console.log("edit ", row)
+            // console.log("edit ", row)
             var tmp = []
             for(let item of Object.entries(row.structure)){
                 if(item[0] !== 'describe' && item[0] !== 'name'){
@@ -239,28 +246,8 @@ export default {
                 let oriThis = this
                 postForm('template/delete', {main_id: row.main_id}, (response) => {
                     if(response.code === 0){
-                        const requestData = {
-                            main_id: oriThis.templateInfo.main_id,
-                            show_time: oriThis.templateInfo.show_time,
-                            children_template_limit: oriThis.templateInfo.children_template_limit,
-                            name: oriThis.templateInfo.name,
-                            brother_use_limit: oriThis.templateInfo.brother_use_limit
-                        }
-                        const index = requestData.children_template_limit.indexOf(row.main_id)
-                        requestData.children_template_limit.splice(index, 1)
-                                oriThis.updateTableData()
-                        // console.log('child_template', requestData.children_template_limit);
-                        // postForm('template/update', requestData, (response) => {
-                        //     if(response.code === 0){
-                        //     }
-                        //     else{
-                        //         oriThis.$message({
-                        //             message: response.msg,
-                        //             type: "error"
-                        //         })
-                        //     }
-                        // })
-
+                        oriThis.updateTableData()
+                        oriThis.dialogVisible = false
                     }
                     else{
                         oriThis.$message({
@@ -276,20 +263,9 @@ export default {
                 });          
             });
         },
-        handleDetial(row){
-            this.$store.commit('setTemplateId', row.main_id)
-            this.$store.commit('addTag', {
-                label: row.name,
-                templateId: row.main_id,
-                dataPath: ""
-            })
-            location.reload()
-        },
         handlePage(pageId){
             // console.log(pageId)
             this.pageConfig.page = pageId
-            
-            // this.getUserList()
         },
         addAttribute(){
             this.attributeData.val = {
@@ -320,16 +296,25 @@ export default {
             this.attributeData.editIndex = index
         },
         updateTableData(){
-            this.total = 2
             this.tableData = []
-            const tid = this.$store.state.data.templateId
             let oriThis = this
-            getChildTemplate(tid, (response) => {
-                // console.log('add childtemplate ', response);
-                oriThis.tableData.push(response)
+            getForm('template/list', (response) => {
+                if(response.code === 0) {
+                    const specialTemplate = Object.values(config.templateId)
+                    for(let item of response.data){
+                        if(specialTemplate.indexOf(item.main_id) === -1){
+                            oriThis.tableData.push(item)
+                        }
+                    }
+                }
+                else{
+                    oriThis.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });  
+                }
             })
-            getTemplateInfo(tid, (response) => {
-                // console.log("templateInfo: ", response);
+            getTemplateInfo(config.templateId.attrListTemplateId, (response) => {
                 this.templateInfo = response.data
             })
         }

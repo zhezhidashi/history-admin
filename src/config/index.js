@@ -5,6 +5,7 @@ const templateId = {
     ancientBookTemplateId: 14,
     reservationTemplateId: 15,
     feedbackTemplateId: 39,
+    feedbackListTemplateId: 40,
     attrListTemplateId: 41,
 }
 
@@ -151,11 +152,11 @@ export default {
             url: 'views/Recovery/Recovery.vue'
         },
         {
-            path: '/attribute',
-            name: 'attribute',
-            label: '字段管理',
+            path: '/template_list',
+            name: 'template_list',
+            label: '模板列表',
             icon: 'share',
-            url: 'views/Attribute/Attribute.vue'
+            url: 'views/TemplateList/TemplateList.vue'
         },
     ],
     attributeInfo: [
