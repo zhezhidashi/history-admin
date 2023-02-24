@@ -99,8 +99,8 @@
                     width="270">
                 </el-table-column>
                 <el-table-column
-                    prop="content.describe"
-                    label="说明"
+                    prop="update_time"
+                    label="更新时间"
                     width="500">
                 </el-table-column>
             </el-table>

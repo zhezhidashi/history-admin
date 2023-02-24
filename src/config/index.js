@@ -91,7 +91,7 @@ export default {
         },
         {
           label: '模板管理',
-          icon: 's-order',
+          icon: 'share',
           children: [
             {
                 dataPath: 'root/archives',
@@ -155,7 +155,7 @@ export default {
             path: '/template_list',
             name: 'template_list',
             label: '模板列表',
-            icon: 'share',
+            icon: 's-order',
             url: 'views/TemplateList/TemplateList.vue'
         },
     ],

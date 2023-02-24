@@ -23,14 +23,22 @@
                 <el-form-item label="模板名称" prop="name">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
-                <h4 style="text-align:center">模板属性(默认属性：名称)</h4>
-                <el-form-item v-for="(item, index) of form.templateAttribute"
-                    :key="item.show_name"
-                    :label="item.show_name + `(${attrList[item.data_type].showName})`"
-                >
-                    <el-button v-if="modalType === 0" type="primary" @click="editAttr(index)"> 编辑</el-button>
-                    <el-button v-if="modalType === 0" type="primary" @click="deleteAttr(index)"> 删除</el-button>
-                </el-form-item>
+                <h3 style="text-align:center">模板属性(默认属性：名称)</h3>
+                <div v-if="modalType === 0">
+                    <el-form-item v-for="(item, index) of form.templateAttribute"
+                        :key="item.show_name"
+                        :label="item.show_name + `(${attrList[item.data_type].showName})`"
+                    >
+                        <el-button type="primary" @click="editAttr(index)"> 编辑</el-button>
+                        <el-button type="primary" @click="deleteAttr(index)"> 删除</el-button>
+                    </el-form-item>
+                </div>
+                <div v-if="modalType === 1">
+                    <h4 v-for="item of form.templateAttribute"
+                        :key="item.show_name"
+                        style="text-align:center"
+                    >{{item.show_name + `(${attrList[item.data_type].showName})`}}</h4>
+                </div>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button v-if="modalType === 0" type="primary" @click="addAttribute">新增属性</el-button>
@@ -310,7 +318,7 @@ export default {
                 else{
                     oriThis.$message({
                         type: 'info',
-                        message: '已取消删除'
+                        message: response.msg
                     });  
                 }
             })

@@ -22,17 +22,12 @@
                 <el-table-column
                     prop="content.name"
                     label="名称"
-                    width="270">
-                </el-table-column>
-                <el-table-column
-                    prop="content.describe"
-                    label="说明"
-                    width="300">
+                    width="400">
                 </el-table-column>
                 <el-table-column
                     prop="update_time"
                     label="更新时间"
-                    width="270">
+                    width="400">
                 </el-table-column>
             </el-table>
         </div>
