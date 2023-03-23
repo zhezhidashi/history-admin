@@ -1,12 +1,15 @@
 const templateId = {
-    archivesTemplateId: 8,
-    pictureTemplateId: 12,
-    interviewTemplateId: 13,
-    ancientBookTemplateId: 14,
-    reservationTemplateId: 15,
-    feedbackTemplateId: 39,
-    feedbackListTemplateId: 40,
-    attrListTemplateId: 41,
+    archivesTemplateId: 1,
+    pictureTemplateId: 2,
+    interviewTemplateId: 3,
+    ancientBookTemplateId: 4,
+    reservationTemplateId: 5,
+    feedbackTemplateId: 7,
+    feedbackListTemplateId: 6,
+    fieldTemplateMask: [
+        5, 7, 8, 9
+    ],
+    nameFieldId: 5,
 }
 
 export default {
@@ -40,6 +43,25 @@ export default {
             label: '用户组管理',
             icon: 'user-solid',
             url: 'views/User/Group'
+        },
+        {
+            label: '模板列表',
+            icon: 's-order',
+            url: 'views/TemplateList/TemplateList.vue',
+            children:[
+                {
+                    path: '/template_list/common',
+                    name: 'template_list_common',
+                    label: '普通模板',
+                    url: 'views/TemplateList/TemplateList',
+                },
+                {
+                    path: '/template_list/field',
+                    name: 'template_list_field',
+                    label: '字段模板',
+                    url: 'views/TemplateList/FieldList',
+                },
+            ],
         },
         {
             label: '内容管理',
@@ -151,25 +173,8 @@ export default {
             icon: 'delete-solid',
             url: 'views/Recovery/Recovery.vue'
         },
-        {
-            path: '/template_list',
-            name: 'template_list',
-            label: '模板列表',
-            icon: 's-order',
-            url: 'views/TemplateList/TemplateList.vue'
-        },
     ],
     attributeInfo: [
-        {
-            showName: '标题',
-            pre: 'title',
-            dataType: 'str',
-        },
-        {
-            showName: '简介/描述',
-            pre: 'intro',
-            dataType: 'str',
-        },
         {
             showName: '文本',
             pre: 'other',

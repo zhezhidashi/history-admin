@@ -20,7 +20,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="content.name"
+                    prop="content[5]"
                     label="名称"
                     width="400">
                 </el-table-column>

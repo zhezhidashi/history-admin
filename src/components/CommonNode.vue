@@ -46,7 +46,7 @@
             :before-close="handleClose"
             :close-on-click-modal="false"
         >
-            <el-form ref="form" :model="form" label-width="80px">
+            <el-form ref="form" :model="form" label-width="120px">
                 <el-form-item v-for="item of Object.entries(this.selectedChildTemplate.structure)"
                     :key="item[0]"
                     :label="item[1].show_name"
@@ -94,7 +94,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="content.name"
+                    prop="content[5]"
                     label="名称"
                     width="270">
                 </el-table-column>
@@ -120,6 +120,7 @@
 import {getChildTemplate, getChildNode, postForm} from '../api/CommonData.js'
 import {getNewName} from '../utils/name'
 import FileForm from './FileForm.vue';
+import config from '../config'
 
 export default {
     data() {
@@ -147,7 +148,8 @@ export default {
             content: {},
             visible: false,
             type:''
-        }
+        },
+        nameFieldId: config.templateId.nameFieldId
       };
     },
     methods: {
@@ -175,7 +177,6 @@ export default {
             this.dataDialogVisible = true
         },
         submitData(){
-            // console.log('finished form', this.form);
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
                 if(this.form[item[0]] !== undefined) {
                     if(item[1].data_type === 'float') this.form[item[0]] = parseFloat(this.form[item[0]])
@@ -185,6 +186,7 @@ export default {
                 else if(item[1].data_type === 'int') this.form[item[0]] = 1e9
                 else if(item[1].data_type === 'float') this.form[item[0]] = parseFloat('1000000000.0')
             }
+            console.log('finished form', this.form);
             if(this.modalType === 0){
                 const newName = getNewName()
                 let oriThis = this
@@ -195,7 +197,7 @@ export default {
                 }, (response) => {
                     // console.log("add data: ", response);
                     if(response.code === 0){
-                        console.log(this.$store.state.data.dataPath, this.templateForm.templateId);
+                        // console.log(this.$store.state.data.dataPath, this.templateForm.templateId);
                         oriThis.updateTableData()
                         oriThis.dataDialogVisible = false
                     }
@@ -289,7 +291,7 @@ export default {
             this.$store.commit('setDataPath', row.path)
             this.$store.commit('setTemplateId', row.template_id)
             this.$store.commit('addTag', {
-                label: row.content.name,
+                label: row.content[this.nameFieldId],
                 templateId: row.template_id,
                 dataPath: row.path
             })
@@ -354,7 +356,7 @@ export default {
                     "method": "show_time",
                     "order": "+"
                 },
-                "template_id": 0
+                "template_id_list": []
             }
             let oriThis = this
             postForm('data/list', requestData, (response) => {

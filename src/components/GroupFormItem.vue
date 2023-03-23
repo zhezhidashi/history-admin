@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import {getChildNode} from '../api/CommonData'
+import {postForm} from '../api/CommonData'
 import config from '../config'
 
 export default {
@@ -79,20 +79,41 @@ export default {
                         label: '选择当前节点',
                         leaf: true,
                     })
-                    getChildNode(node.value.path, node.data.templateId, (response) => {
-                        // console.log('load: ', response);
-                        for(let item of response.data.list){
-                            res.push({
-                                value: {
-                                    path: item.path,
-                                    showName: item.content.name,
-                                },
-                                label: item.content.name,
-                                leaf: false,
-                                templateId: item.template_id
+                    const requestData = {
+                        "location_id": 99999999,
+                        "page_index": 1,
+                        "page_size": 999,
+                        "sort_by": "-show_time",
+                        "path": node.value.path,
+                        "deep_range": 1,
+                        "filter_rule": {},
+                        "order_rule": {
+                            "method": "show_time",
+                            "order": "+"
+                        },
+                        "template_id": 0
+                    }
+                    postForm('data/list', requestData, (response) => {
+                        if(response.code === 0){
+                            for(let item of response.data.list){
+                                res.push({
+                                    value: {
+                                        path: item.path,
+                                        showName: item.content.name,
+                                    },
+                                    label: item.content.name,
+                                    leaf: false,
+                                    templateId: item.template_id
+                                })
+                            }
+                            resolve(res)
+                        }
+                        else{
+                            this.$message({
+                                type: 'warning',
+                                message: response.msg
                             })
                         }
-                        resolve(res)
                     })
                 }
                 

@@ -4,7 +4,7 @@
             <el-button type="primary" @click="handleAdd"> +新增</el-button>
         </div>
         <el-dialog
-            title="新建模板"
+            title="新增字段"
             :visible.sync="dialogVisible"
             width="50%"
             :before-close="handleClose"
@@ -16,33 +16,31 @@
                 :rules="rules"
                 label-width="120px" 
             >
-                <el-form-item label="模板名称" prop="name">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="字段名称" prop="show_name">
+                    <el-input v-model="form.show_name"></el-input>
                 </el-form-item>
-                <el-form-item label="新增字段">
-                    <el-select v-model="form.field_add">
-                        <el-option v-for="(item, index) of fieldList"
-                            :key="item.show_name"
+                <el-form-item label="数据类型" prop="data_type">
+                    <el-select v-model="form.data_type">
+                        <el-option v-for="(item, index) of attrList"
+                            :key="item.showName"
                             :value="index"
-                            :label="item.show_name"
+                            :label="item.showName"
                         ></el-option>
                     </el-select>
-                    <el-button type="primary" @click="addField()"
-                        style="margin-left: 20px"
-                    > 新建</el-button>
                 </el-form-item>
-                <div>
-                    <h3 style="text-align:center">模板字段(默认字段：名称)</h3>
-                    <el-form-item v-for="(item, index) of form.fieldList"
-                        :key="item.show_name"
-                        :label="fieldList[item].show_name"
-                    >
-                        <el-button
-                            type="primary"
-                            @click="deleteField(index)"
-                        > 删除</el-button>
-                    </el-form-item>
-                </div>
+                <h4 style="text-align:center">若数据类型为整数,请填写最大最小值,填0为不限</h4>
+                <el-form-item label="最小值" prop="min">
+                    <el-input v-model.number="form.min"></el-input>
+                </el-form-item>
+                <el-form-item label="最大值" prop="max">
+                    <el-input v-model.number="form.max"></el-input>
+                </el-form-item>
+                <el-form-item label="字段是否必填" prop="require">
+                    <el-select v-model="form.require">
+                        <el-option label="是" :value="true"></el-option>
+                        <el-option label="否" :value="false"></el-option>
+                    </el-select>
+                </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">取 消</el-button>
@@ -70,7 +68,7 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="name"
+                    prop="show_name"
                     label="名称"
                     width="360">
                 </el-table-column>
@@ -100,23 +98,21 @@ export default {
     data() {
       return {
         dialogVisible: false,
-        attributeData:{
-            val:{},
-            visible:false,
-            editIndex: -1,
-        },
-        form: {
-            fieldList: [],
-            field_add: "",
-            name:"",
-        },
+        form:{
+                show_name:"",
+                data_type:"",
+                max:0,
+                min:0,
+                require: true
+            },
         rules:{
-            name:[
-                {required: true, message:"请输入模板名称", trigger: 'blur'}
-            ]
+            show_name:[
+                {required: true, message:"请输入属性名", trigger:"blur"}
+            ],
+            data_type:[
+                {required: true, message:"请选择数据类型", trigger:"blur"}
+            ],
         },
-        templateInfo:{},
-        editTemplate:{},
         tableData: [],
         modalType: 0,
         total: 0,
@@ -124,85 +120,44 @@ export default {
             page: 1,
             limit: 10, 
         },
-        editData: {},
         attrList: [],
-        fieldList: [],
-        fieldListMap: {},
       };
     },
     methods: {
-        getTemplateById(templateId){
-            for(let item of this.childTemplate ) {
-                if(item.main_id === templateId){
-                    return item
-                }
-            }
-        },
-        getDataType(attrName, content){
-            const length = this.attrList.length
-            for(let i=0; i<length; ++i){
-                const substrindex = attrName.indexOf(this.attrList[i].pre)
-                if(substrindex !== -1) return i
-            }
-            if(content.data_type === 'str') return 2
-            if(content.data_type === 'int') return 6
-            if(content.data_type === 'float') return 7
-        },
         submitData(){
             this.$refs.form.validate((valid) => {
                 if(valid){
+                    this.form.data_type = this.attrList[this.form.data_type].dataType
+                    console.log('finished form', this.form);
+                    let oriThis = this
                     if(this.modalType === 0){
-                        // console.log(this.form.templateAttribute);
-                        var requestData = {
-                            name: this.form.name, 
-                            field_id_list: [],
-                            children_template_limit: [0],
-                            brother_use_limit: 0
-
-                        }
-                        requestData.field_id_list.push(config.templateId.nameFieldId)
-                        for(let i of this.form.fieldList){
-                            requestData.field_id_list.push(this.fieldList[i].main_id)
-                        }
-                        let oriThis = this
-                        postForm('template/add', requestData, (response) => {
+                        postForm('field_template/add', this.form, (response) => {
                             if(response.code === 0){
-                                oriThis.updateTableData()
                                 oriThis.dialogVisible = false
+                                oriThis.updateTableData()
                             }
                             else{
                                 oriThis.$message({
-                                    type: 'error',
-                                    message: response.msg
+                                    message: response.msg,
+                                    type: "error"
                                 })
+                                oriThis.form.data_type = ""
                             }
                         })
                     }
                     else{
                         let oriThis = this
-                        const requestData = {
-                            name: this.form.name,
-                            main_id: this.editTemplate.main_id,
-                            show_time: this.editTemplate.show_time,
-                            field_id_list: [],
-                            children_template_limit: this.editTemplate.children_template_limit,
-                            brother_use_limit: this.editTemplate.brother_use_limit,
-                        }
-                        requestData.field_id_list.push(config.templateId.nameFieldId)
-                        for(let i of this.form.fieldList){
-                            requestData.field_id_list.push(this.fieldList[i].main_id)
-                        }
-                        console.log(requestData);
-                        postForm('template/update', requestData, (response) => {
+                        postForm('field_template/update', this.form, (response) => {
                             if(response.code !== 0){
-                                this.$message({
+                                oriThis.$message({
                                     message: response.msg,
                                     type: "error"
                                 })
+                                oriThis.form.data_type = ""
                             }
                             else {
                                 oriThis.updateTableData()
-                                this.dialogVisible = false
+                                oriThis.dialogVisible = false
                             }
                         })
                     }
@@ -214,24 +169,28 @@ export default {
         },
         handleAdd(){
             this.form = {
-                name: "",
-                fieldList: [],
-                field_add: "",
+                show_name:"",
+                data_type:"",
+                max:0,
+                min:0,
+                require: true
             }
             this.modalType = 0
             this.dialogVisible = true
+            // console.log('child_template: ', this.childTemplate);
         },
         handleEdit(row){
             // console.log("edit ", row)
-            this.form = {name: row.name, fieldList: [], field_add: "",}
-            for(let item of Object.keys(row.structure)){
-                if(item !== config.templateId.nameFieldId.toString()){
-                    this.form.fieldList.push(this.fieldListMap[item])
-                }
+            this.form = {
+                main_id: row.main_id,
+                show_time: row.update_time,
+                show_name: row.show_name,
+                data_type: "",
+                max: row.max,
+                min: row.min,
+                require: row.require ? true : false
             }
-            // console.log("field_list:", this.form.fieldList);
             this.modalType = 1
-            this.editTemplate = row
             this.dialogVisible = true
         },
         handleDelete(row){
@@ -242,7 +201,7 @@ export default {
             }).then(() => {
                 // console.log('aaa', row, this.templateInfo);
                 let oriThis = this
-                postForm('template/delete', {main_id: row.main_id}, (response) => {
+                postForm('field_template/delete', {main_id: row.main_id}, (response) => {
                     if(response.code === 0){
                         oriThis.updateTableData()
                         oriThis.dialogVisible = false
@@ -265,45 +224,18 @@ export default {
             // console.log(pageId)
             this.pageConfig.page = pageId
         },
-        addField(){
-            if(this.form.field_add !== -1){
-                this.form.fieldList.push(this.form.field_add)
-                this.form.field_add = ""
-            }
-        },
-        deleteField(index){
-            this.form.fieldList.splice(index, 1)
-        },
-        getFieldList(){
-            let oriThis = this
-            getForm('field_template/list', (response) => {
-                if(response.code === 0) {
-                    for(let item of response.data){
-                        if(config.templateId.fieldTemplateMask.indexOf(item.main_id) === -1){
-                            oriThis.fieldList.push(item)
-                            oriThis.fieldListMap[item.main_id] = oriThis.fieldList.length - 1
-                        }
-                    }
-                }
-                else{
-                    oriThis.$message({
-                        type: 'info',
-                        message: response.msg
-                    });  
-                }
-            })
-        },
         updateTableData(){
             this.tableData = []
             let oriThis = this
-            getForm('template/list', (response) => {
+            getForm('field_template/list', (response) => {
                 if(response.code === 0) {
-                    const specialTemplate = Object.values(config.templateId)
+                    // console.log('fields: ', response);
                     for(let item of response.data){
-                        if(specialTemplate.indexOf(item.main_id) === -1){
+                        if(config.templateId.fieldTemplateMask.indexOf(item.main_id) === -1){
                             oriThis.tableData.push(item)
                         }
                     }
+
                 }
                 else{
                     oriThis.$message({
@@ -317,7 +249,6 @@ export default {
     mounted(){
         // console.log('node mounted');
         this.updateTableData()
-        this.getFieldList()
         this.attrList = config.attributeInfo
     }, 
   };
