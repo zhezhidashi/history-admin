@@ -110,9 +110,11 @@ export default {
                         main_id: this.templateInfo.main_id,
                         show_time: this.templateInfo.show_time,
                         name: this.templateInfo.name,
+                        field_id_list: this.templateInfo.field_id_list,
                         children_template_limit: this.templateInfo.children_template_limit,
                         brother_use_limit: this.templateInfo.brother_use_limit
                     }
+                    // console.log(requestData);
                     const index0 = requestData.children_template_limit.indexOf(0)
                     if(index0 !== -1){
                         requestData.children_template_limit.splice(index0, 1)
@@ -169,6 +171,7 @@ export default {
                         main_id: this.templateInfo.main_id,
                         show_time: this.templateInfo.show_time,
                         name: this.templateInfo.name,
+                        field_id_list: this.templateInfo.field_id_list,
                         children_template_limit: this.templateInfo.children_template_limit,
                         brother_use_limit: this.templateInfo.brother_use_limit
                     }
@@ -254,7 +257,7 @@ export default {
                 });  
             }
         })
-        console.log('this template ', this.$store.state.data.templateId);
+        // console.log('this template ', this.$store.state.data.templateId);
         this.updateTableData()
     }, 
   };

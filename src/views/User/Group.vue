@@ -130,7 +130,7 @@ export default {
             }
         },
         handleEdit(row){
-            // console.log(row);
+            console.log(row);
             this.modalType = 1
             this.form = {
                 name: row.name,
@@ -153,7 +153,7 @@ export default {
                             this.form.scope.push({
                                 path:{
                                     path: response.data.path,
-                                    showName: response.data.content.name,
+                                    showName: response.data.content[config.templateId.nameFieldId.toString()],
                                 },
                                 permission: item[1]
                             })

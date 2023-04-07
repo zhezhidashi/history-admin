@@ -13,7 +13,7 @@ const templateId = {
 }
 
 export default {
-    submenuIndex: 3,
+    submenuIndex: 5,
     nameMap: {
         'root/archives': '档案/手稿',
         'root/picture': '照片/图像',
@@ -64,73 +64,25 @@ export default {
             ],
         },
         {
-            label: '内容管理',
-            icon: 's-order',
+            label: '模板管理',
+            icon: 'share',
             children: [
                 {
                     dataPath: 'root/archives',
                     // path: '/node',
-                    path: '/archives',
-                    name: 'archives',
+                    path: '/template/archives',
+                    name: 'archivesT',
                     label: '档案/手稿',
                     // url: 'components/CommonNode',
-                    url: 'views/Archives/Archives',
+                    url: 'views/Template/Archives/ArchivesT',
                     templateId: templateId.archivesTemplateId
                 },
                 {
                     dataPath: 'root/picture',
-                    path: '/picture',
-                    name: 'picture',
+                    path: '/template/picture',
+                    name: 'pictureT',
                     label: '照片/图像',
-                    url: 'views/Picture/Picture',
-                    templateId: templateId.pictureTemplateId
-                },
-                {
-                    dataPath: 'root/interview',
-                    path: '/interview',
-                    name: 'interview',
-                    label: '口述/访谈',
-                    url: 'views/Interview/Interview',
-                    templateId: templateId.interviewTemplateId
-                },
-                {
-                    dataPath: 'root/ancient_book',
-                    path: '/ancient_book',
-                    name: 'ancient_book',
-                    label: '古籍',
-                    url: 'views/Book/Book',
-                    templateId: templateId.ancientBookTemplateId
-                },
-                {
-                    dataPath: 'root/reservation',
-                    path: '/reservation',
-                    name: 'reservation',
-                    label: '特藏',
-                    url: 'views/Reservation/Reservation',
-                    templateId: templateId.reservationTemplateId
-                },
-            ]
-        },
-        {
-          label: '模板管理',
-          icon: 'share',
-          children: [
-            {
-                dataPath: 'root/archives',
-                // path: '/node',
-                path: '/template/archives',
-                name: 'archivesT',
-                label: '档案/手稿',
-                // url: 'components/CommonNode',
-                url: 'views/Template/Archives/ArchivesT',
-                templateId: templateId.archivesTemplateId
-            },
-            {
-                dataPath: 'root/picture',
-                path: '/template/picture',
-                name: 'pictureT',
-                label: '照片/图像',
-                url: 'views/Template/Picture/PictureT',
+                    url: 'views/Template/Picture/PictureT',
                 templateId: templateId.pictureTemplateId
             },
             {
@@ -157,18 +109,66 @@ export default {
                 url: 'views/Template/Reservation/ReservationT',
                 templateId: templateId.reservationTemplateId
             },
-            ]
-        },
-        {
-            path: '/feedback_list',
-            name: 'feedback',
-            label: '用户反馈',
-            icon: 's-comment',
-            url: 'views/Feedback/FeedbackList'
-        },
-        {
-            path: '/recovery',
-            name: 'recovery',
+        ]
+    },
+    {
+        label: '内容管理',
+        icon: 's-order',
+        children: [
+            {
+                dataPath: 'root/archives',
+                // path: '/node',
+                path: '/archives',
+                name: 'archives',
+                label: '档案/手稿',
+                // url: 'components/CommonNode',
+                url: 'views/Archives/Archives',
+                templateId: templateId.archivesTemplateId
+            },
+            {
+                dataPath: 'root/picture',
+                path: '/picture',
+                name: 'picture',
+                label: '照片/图像',
+                url: 'views/Picture/Picture',
+                templateId: templateId.pictureTemplateId
+            },
+            {
+                dataPath: 'root/interview',
+                path: '/interview',
+                name: 'interview',
+                label: '口述/访谈',
+                url: 'views/Interview/Interview',
+                templateId: templateId.interviewTemplateId
+            },
+            {
+                dataPath: 'root/ancient_book',
+                path: '/ancient_book',
+                name: 'ancient_book',
+                label: '古籍',
+                url: 'views/Book/Book',
+                templateId: templateId.ancientBookTemplateId
+            },
+            {
+                dataPath: 'root/reservation',
+                path: '/reservation',
+                name: 'reservation',
+                label: '特藏',
+                url: 'views/Reservation/Reservation',
+                templateId: templateId.reservationTemplateId
+            },
+        ]
+    },
+    {
+        path: '/feedback_list',
+        name: 'feedback',
+        label: '用户反馈',
+        icon: 's-comment',
+        url: 'views/Feedback/FeedbackList'
+    },
+    {
+        path: '/recovery',
+        name: 'recovery',
             label: '误删恢复',
             icon: 'delete-solid',
             url: 'views/Recovery/Recovery.vue'

@@ -167,9 +167,9 @@ export default {
             this.selectedChildTemplate = this.getTemplateById(this.templateForm.templateId)
             // 利用整体替换使响应式能够识别form的修改
             var tmp = {}
-            console.log(this.selectedChildTemplate);
+            // console.log(this.selectedChildTemplate);
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
-                tmp[item[0]] = undefined
+                tmp[item[0]] = ''
             }
             this.form = tmp
             // console.log("form", this.form);
@@ -177,8 +177,9 @@ export default {
             this.dataDialogVisible = true
         },
         submitData(){
+            console.log(this.form);
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
-                if(this.form[item[0]] !== undefined) {
+                if(this.form[item[0]] !== '') {
                     if(item[1].data_type === 'float') this.form[item[0]] = parseFloat(this.form[item[0]])
                     continue
                 }
@@ -186,7 +187,7 @@ export default {
                 else if(item[1].data_type === 'int') this.form[item[0]] = 1e9
                 else if(item[1].data_type === 'float') this.form[item[0]] = parseFloat('1000000000.0')
             }
-            console.log('finished form', this.form);
+            // console.log('finished form', this.form);
             if(this.modalType === 0){
                 const newName = getNewName()
                 let oriThis = this

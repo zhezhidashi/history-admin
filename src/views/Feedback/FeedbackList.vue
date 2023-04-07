@@ -15,17 +15,17 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                    prop="content.name"
+                    prop="content.7"
                     label="姓名"
-                    width="100">
+                    width="160">
                 </el-table-column>
 				<el-table-column
-                    prop="content.contact"
+                    prop="content.8"
                     label="联系方式"
                     width="270">
                 </el-table-column>
                 <el-table-column
-					prop="content.content"
+					prop="content.9"
 					label="留言内容"
 					width="500">
 				</el-table-column>
@@ -67,9 +67,9 @@ export default {
 			this.$router.push({
 				path: "/feedback_content",
 				query: {
-					Name: row.content.name,
-					Contact: row.content.contact,
-					Content: row.content.content,
+					Name: row.content["7"],
+					Contact: row.content["8"],
+					Content: row.content["9"],
 				},
 			});
 		},

@@ -41,6 +41,10 @@
                             type="primary"
                             @click="deleteField(index)"
                         > 删除</el-button>
+                        <el-button
+                            v-if="index !== 0"
+                            @click="moveField(index)"
+                        > 上移</el-button>
                     </el-form-item>
                 </div>
             </el-form>
@@ -273,6 +277,9 @@ export default {
         },
         deleteField(index){
             this.form.fieldList.splice(index, 1)
+        },
+        moveField(index){
+            this.form.fieldList[index-1] = this.form.fieldList.splice(index,1,this.form.fieldList[index-1])[0]
         },
         getFieldList(){
             let oriThis = this

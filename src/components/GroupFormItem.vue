@@ -99,9 +99,9 @@ export default {
                                 res.push({
                                     value: {
                                         path: item.path,
-                                        showName: item.content.name,
+                                        showName: item.content[config.templateId.nameFieldId.toString()],
                                     },
-                                    label: item.content.name,
+                                    label: item.content[config.templateId.nameFieldId.toString()],
                                     leaf: false,
                                     templateId: item.template_id
                                 })
