@@ -42,20 +42,35 @@
         <el-dialog
             title="数据"
             :visible.sync="dataDialogVisible"
-            width="50%"
+            width="70%"
             :before-close="handleClose"
             :close-on-click-modal="false"
         >
-            <el-form ref="form" :model="form" label-width="120px">
-                <el-form-item v-for="item of Object.entries(this.selectedChildTemplate.structure)"
-                    :key="item[0]"
-                    :label="item[1].show_name"
+            <el-form ref="form" :model="form" label-width="150px">
+                <el-form-item v-for="item of selectedChildTemplate.field_id_list"
+                    :key="item"
+                    :label="selectedChildTemplate.structure[item.toString()].show_name"
                 >
-                    <el-input v-if="item[1].data_type === 'str'" v-model="form[item[0]]"></el-input>
-                    <el-input v-if="item[1].data_type === 'int'" v-model.number="form[item[0]]"></el-input>
-                    <el-input v-if="item[1].data_type === 'float'" v-model="form[item[0]]"></el-input>
+                    <el-input v-if="selectedChildTemplate.structure[item.toString()].data_type === 'str'" v-model="form[item]"></el-input>
+                    <el-input v-if="selectedChildTemplate.structure[item.toString()].data_type === 'int'" v-model.number="form[item]"></el-input>
+                    <el-input v-if="selectedChildTemplate.structure[item.toString()].data_type === 'float'" v-model="form[item]"></el-input>
+                </el-form-item>
+                <el-form-item label="权限控制模式">
+                    <el-radio v-model="visitMode" :label="1">覆盖模式</el-radio>
+                    <el-radio v-model="visitMode" :label="2">继承模式</el-radio>
+                </el-form-item>
+                <el-form-item label="允许访问的用户组">
+                    <el-radio v-model="groupIsAll" :label="1">全部</el-radio>
+                    <el-radio v-model="groupIsAll" :label="2">部分</el-radio>
+                </el-form-item>
+                <el-form-item v-if="groupIsAll == 2" label="选择用户组">
+                    <el-transfer v-model="allowGroup" :data="groupList"
+                        :titles="['可选用户组', '已选择']"
+                        target-order="origin"
+                    ></el-transfer>
                 </el-form-item>
             </el-form>
+
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="uploadFile('picture')">上传图片</el-button>
                 <el-button type="primary" @click="uploadFile('media')">上传媒体文件</el-button>
@@ -117,7 +132,7 @@
 </template>
 
 <script>
-import {getChildTemplate, getChildNode, postForm} from '../api/CommonData.js'
+import {getChildTemplate, getForm, postForm} from '../api/CommonData.js'
 import {getNewName} from '../utils/name'
 import FileForm from './FileForm.vue';
 import config from '../config'
@@ -135,6 +150,11 @@ export default {
         },
         form: {
         },
+        visitMode: 1,
+        allowGroup: [],
+        groupList: [],
+        groupIsAll: 1,
+
         tableData: [],
         childTemplate: [],
         modalType: 0,
@@ -149,7 +169,6 @@ export default {
             visible: false,
             type:''
         },
-        nameFieldId: config.templateId.nameFieldId
       };
     },
     methods: {
@@ -166,13 +185,9 @@ export default {
             this.dialogVisible = false
             this.selectedChildTemplate = this.getTemplateById(this.templateForm.templateId)
             // 利用整体替换使响应式能够识别form的修改
-            var tmp = {}
             // console.log(this.selectedChildTemplate);
-            for(let item of Object.entries(this.selectedChildTemplate.structure)){
-                tmp[item[0]] = ''
-            }
-            this.form = tmp
-            // console.log("form", this.form);
+            this.form = {}
+            this.visitMode = 2
             this.modalType = 0
             this.dataDialogVisible = true
         },
@@ -194,11 +209,11 @@ export default {
                 postForm('data/add', {
                     path: this.$store.state.data.dataPath + '/' + newName,
                     template_id: this.templateForm.templateId,
-                    content: this.form
+                    content: this.form,
+                    visit_mode: this.visitMode,
+                    allow_group: (this.groupIsAll == 1) ? ['all'] : this.allowGroup,
                 }, (response) => {
-                    // console.log("add data: ", response);
                     if(response.code === 0){
-                        // console.log(this.$store.state.data.dataPath, this.templateForm.templateId);
                         oriThis.updateTableData()
                         oriThis.dataDialogVisible = false
                     }
@@ -216,9 +231,10 @@ export default {
                     path: this.editData.path,
                     template_id: this.editData.template_id,
                     content: this.form,
-                    show_time: this.editData.show_time
+                    show_time: this.editData.show_time,
+                    visit_mode: this.visitMode,
+                    allow_group: (this.groupIsAll == 1) ? ['all'] : this.allowGroup,
                 }, (response) => {
-                    // console.log("update date", response);
                     if(response.code === 0){
                         oriThis.updateTableData()
                         oriThis.dataDialogVisible = false
@@ -239,6 +255,8 @@ export default {
         },
         handleAdd(){
             this.modalType = 0
+            this.groupIsAll = 1
+            this.allowGroup = []
             this.dialogVisible = true
             // console.log('child_template: ', this.childTemplate);
         },
@@ -246,11 +264,14 @@ export default {
             this.selectedChildTemplate = this.getTemplateById(row.template_id)
             // console.log("edit ", row, this.selectedChildTemplate)
             const tmp = {}
-            for(let item of Object.entries(this.selectedChildTemplate.structure)){
-                tmp[item[0]] = row.content[item[0]]
+            for(let item of this.selectedChildTemplate.field_id_list){
+                tmp[item] = row.content[item.toString()]
             }
             this.form = tmp
             this.editData = row
+            this.visitMode = row.visit_mode
+            this.groupIsAll = row.allow_group[0] === 'all' ? 1 : 2
+            this.allowGroup = this.groupIsAll === 1 ? [] : row.allow_group
             this.modalType = 1
             this.dataDialogVisible = true
         },
@@ -292,7 +313,7 @@ export default {
             this.$store.commit('setDataPath', row.path)
             this.$store.commit('setTemplateId', row.template_id)
             this.$store.commit('addTag', {
-                label: row.content[this.nameFieldId],
+                label: row.content[config.templateId.nameFieldId],
                 templateId: row.template_id,
                 dataPath: row.path
             })
@@ -332,6 +353,7 @@ export default {
         handlePage(pageId){
             // console.log(pageId)
             this.pageConfig.page = pageId
+            this.updateTableData()
         },
         uploadFile(type){
             this.uploadFileData.content = this.selectedChildTemplate.structure
@@ -387,7 +409,23 @@ export default {
             // console.log('add childtemplate ', response);
             oriThis.childTemplate.push(response)
         })
-
+        this.groupList = []
+        getForm('user/group/list', (response) => {
+            if(response.code === 0){
+                for(let item of response.data){
+                    oriThis.groupList.push({
+                        key: item.name,
+                        label: item.name,
+                    })
+                }
+            }
+            else{
+                oriThis.$message({
+                    type: 'error',
+                    message: response.msg
+                });
+            }
+        })
     }, 
   };
 </script> 

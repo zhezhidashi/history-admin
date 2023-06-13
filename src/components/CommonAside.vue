@@ -59,7 +59,6 @@ import Cookie from 'js-cookie';
 export default {
     data() {
       return {
-          
       };
     },
     methods: {
@@ -98,12 +97,10 @@ export default {
         return this.$store.state.tab.isCollapse
       },
       menu(){
-        return JSON.parse(Cookie.get('menu')) || this.$store.state.tab.menu
+        return this.$store.state.tab.menu
       }
     },
     mounted(){
-      // console.log('Menu: ', this.menu);
-      // console.log('Vue: ', this);
     }
 }
 </script>

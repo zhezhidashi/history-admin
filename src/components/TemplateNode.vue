@@ -206,6 +206,7 @@ export default {
         handlePage(pageId){
             // console.log(pageId)
             this.pageConfig.page = pageId
+            this.updateTableData()
         },
         updateTableData(){
             this.tableData = []

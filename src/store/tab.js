@@ -33,32 +33,28 @@ export default {
         },
         setMenu(state, val){
             state.menu = val
-            Cookie.set('menu', JSON.stringify(val))
         },
         addMenu(state, router){
-            if(!Cookie.get('menu')) return
-            else{
-                const menu = JSON.parse(Cookie.get('menu'))
-                const menuArray = []
-                menu.forEach(item => {
-                    if(item.children){
-                        item.children = item.children.map(item => {
-                            item.component = () => import(`../${item.url}`)
-                            return item
-                        })
-                        menuArray.push(...item.children)
-                    }
-                    else{
+            const menu = state.menu
+            const menuArray = []
+            menu.forEach(item => {
+                if(item.children){
+                    item.children = item.children.map(item => {
                         item.component = () => import(`../${item.url}`)
-                        menuArray.push(item)
-                    }
-                });
-                // console.log('menuArray: ', menuArray);
+                        return item
+                    })
+                    menuArray.push(...item.children)
+                }
+                else{
+                    item.component = () => import(`../${item.url}`)
+                    menuArray.push(item)
+                }
+            });
+            console.log('menuArray: ', menuArray);
 
-                menuArray.forEach(item => {
-                    router.addRoute('main', item)
-                });
-            }
+            menuArray.forEach(item => {
+                router.addRoute('main', item)
+            });
         }
     }
 }

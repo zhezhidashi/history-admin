@@ -48,17 +48,6 @@ export default {
 
             this.$refs.form.validate((valid) => {
                 if(valid){
-                    // login(this.form, this, getMenuCallback).then(({data: response}) => {
-                    //     console.log('login response', response)
-                    //     if(response.code === 0){
-                    //         const token = response.data
-                    //         // console.log(token);
-                    //         Cookie.set('token', token)
-                    //     }
-                    //     else{
-                    //         this.$message.warning('用户名或密码错误')
-                    //     }
-                    // })
                     login(this.form,  this)
                 }
             })

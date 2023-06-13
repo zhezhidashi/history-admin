@@ -39,7 +39,8 @@ const router = new VueRouter({
 
 // 添加全局前置导航守卫
 router.beforeEach((to, from ,next) => {
-    const token = Cookie.get('token')
+    const token = Cookie.get('mytoken')
+    // console.log('in guard: ', token);
     if(!token && to.name !== 'login') {
         next({name: 'login'})
     }

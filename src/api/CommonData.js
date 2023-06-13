@@ -34,7 +34,7 @@ export const getArchivesItemList = () => {
 }
 
 export const getForm  = (url, callback) => {
-    const token = Cookie.get('token')
+    const token = Cookie.get('mytoken')
     console.log('getForm 的表单: ',url);
     http.request({
         method: "get",
@@ -59,7 +59,7 @@ export const getTemplateInfo = (templateId, callback) => {
 }
 
 export const postForm = (url, data, callback) => {
-    const token = Cookie.get('token')
+    const token = Cookie.get('mytoken')
     console.log('postForm 的表单: ',url , data);
     http.request({
         method: "post",
@@ -182,11 +182,11 @@ export const login = (data, oriThis) => {
         url: baseURL + 'user/login',
         method: 'post',
         data: data,
-    }).then(({data: response}) => {
+    }).then((res) => {
+        let response = res.data
         if(response.code === 0){
             const menu = config.mainMenu
-            // console.log('login-response: ', response);
-            Cookie.set('token', response.data),
+            Cookie.set('mytoken', response.data),
             oriThis.$store.commit('setMenu', menu)
             oriThis.$store.commit('addMenu', oriThis.$router)
             oriThis.$router.push({name: 'home'})

@@ -6,7 +6,7 @@
         <el-dialog
             title="新建模板"
             :visible.sync="dialogVisible"
-            width="50%"
+            width="70%"
             :before-close="handleClose"
             :close-on-click-modal="false"
         >
@@ -20,33 +20,14 @@
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="新增字段">
-                    <el-select v-model="form.field_add">
-                        <el-option v-for="(item, index) of fieldList"
-                            :key="item.show_name"
-                            :value="index"
-                            :label="item.show_name"
-                        ></el-option>
-                    </el-select>
-                    <el-button type="primary" @click="addField()"
-                        style="margin-left: 20px"
-                    > 新建</el-button>
+                    <el-transfer v-model="form.fieldList" :data="fieldList"
+                        :titles="['可选字段', '已选字段']"
+                        target-order="push"
+                    ></el-transfer>
                 </el-form-item>
-                <div>
+                <!-- <div>
                     <h3 style="text-align:center">模板字段(默认字段：名称)</h3>
-                    <el-form-item v-for="(item, index) of form.fieldList"
-                        :key="item.show_name"
-                        :label="fieldList[item].show_name"
-                    >
-                        <el-button
-                            type="primary"
-                            @click="deleteField(index)"
-                        > 删除</el-button>
-                        <el-button
-                            v-if="index !== 0"
-                            @click="moveField(index)"
-                        > 上移</el-button>
-                    </el-form-item>
-                </div>
+                </div> -->
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="handleClose">取 消</el-button>
@@ -111,7 +92,6 @@ export default {
         },
         form: {
             fieldList: [],
-            field_add: "",
             name:"",
         },
         rules:{
@@ -128,10 +108,8 @@ export default {
             page: 1,
             limit: 10, 
         },
-        editData: {},
         attrList: [],
         fieldList: [],
-        fieldListMap: {},
       };
     },
     methods: {
@@ -159,14 +137,10 @@ export default {
                         // console.log(this.form.templateAttribute);
                         var requestData = {
                             name: this.form.name, 
-                            field_id_list: [],
+                            field_id_list: this.form.fieldList,
                             children_template_limit: [0],
                             brother_use_limit: 0
 
-                        }
-                        requestData.field_id_list.push(config.templateId.nameFieldId)
-                        for(let i of this.form.fieldList){
-                            requestData.field_id_list.push(this.fieldList[i].main_id)
                         }
                         let oriThis = this
                         postForm('template/add', requestData, (response) => {
@@ -188,13 +162,9 @@ export default {
                             name: this.form.name,
                             main_id: this.editTemplate.main_id,
                             show_time: this.editTemplate.show_time,
-                            field_id_list: [],
+                            field_id_list: this.form.fieldList,
                             children_template_limit: this.editTemplate.children_template_limit,
                             brother_use_limit: this.editTemplate.brother_use_limit,
-                        }
-                        requestData.field_id_list.push(config.templateId.nameFieldId)
-                        for(let i of this.form.fieldList){
-                            requestData.field_id_list.push(this.fieldList[i].main_id)
                         }
                         console.log(requestData);
                         postForm('template/update', requestData, (response) => {
@@ -219,21 +189,15 @@ export default {
         handleAdd(){
             this.form = {
                 name: "",
-                fieldList: [],
-                field_add: "",
+                fieldList: [config.templateId.nameFieldId],
             }
             this.modalType = 0
             this.dialogVisible = true
         },
         handleEdit(row){
             // console.log("edit ", row)
-            this.form = {name: row.name, fieldList: [], field_add: "",}
-            for(let item of Object.keys(row.structure)){
-                if(item !== config.templateId.nameFieldId.toString()){
-                    this.form.fieldList.push(this.fieldListMap[item])
-                }
-            }
-            // console.log("field_list:", this.form.fieldList);
+            this.form = {name: row.name, fieldList: []}
+            this.form.fieldList = row.field_id_list
             this.modalType = 1
             this.editTemplate = row
             this.dialogVisible = true
@@ -269,12 +233,6 @@ export default {
             // console.log(pageId)
             this.pageConfig.page = pageId
         },
-        addField(){
-            if(this.form.field_add !== -1){
-                this.form.fieldList.push(this.form.field_add)
-                this.form.field_add = ""
-            }
-        },
         deleteField(index){
             this.form.fieldList.splice(index, 1)
         },
@@ -283,14 +241,25 @@ export default {
         },
         getFieldList(){
             let oriThis = this
+            this.fieldList = [
+                {
+                    key: config.templateId.nameFieldId,
+                    label: '节点名称',
+                    disabled: true,
+                }
+            ]
             getForm('field_template/list', (response) => {
                 if(response.code === 0) {
                     for(let item of response.data){
                         if(config.templateId.fieldTemplateMask.indexOf(item.main_id) === -1){
-                            oriThis.fieldList.push(item)
-                            oriThis.fieldListMap[item.main_id] = oriThis.fieldList.length - 1
+                            oriThis.fieldList.push({
+                                key: item.main_id,
+                                label: item.show_name,
+                                disabled: false,
+                            })
                         }
                     }
+                    console.log(this.fieldList)
                 }
                 else{
                     oriThis.$message({
