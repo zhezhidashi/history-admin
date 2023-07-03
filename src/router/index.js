@@ -4,6 +4,7 @@ import Main from '../views/Main.vue'
 import Login from '../views/Login'
 import Manual from '../views/Manual/Manual'
 import Cookie from 'js-cookie'
+import store from '@/store'
 
 Vue.use(VueRouter)
 
@@ -39,12 +40,15 @@ const router = new VueRouter({
 
 // 添加全局前置导航守卫
 router.beforeEach((to, from ,next) => {
-    const token = Cookie.get('mytoken')
+    // const token = Cookie.get('mytoken')
+    const storet = JSON.parse(sessionStorage.getItem("store"));
+    const token = storet.cookie.token
     // console.log('in guard: ', token);
-    if(!token && to.name !== 'login') {
+    // console.log(from.name, to.name);
+    if(token === '' && to.name !== 'login' && from.name !== 'login') {
         next({name: 'login'})
     }
-    else if(token && to.name === 'login'){
+    else if(token !== '' && to.name === 'login' && from.name !== 'home'){
         next({name: 'home'})
     }
     else{

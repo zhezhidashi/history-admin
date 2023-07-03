@@ -1,9 +1,11 @@
 import http from "../utils/requests";
 import Cookie from 'js-cookie'
 import config from '../config'
+import store from "@/store";
 
 // const baseURL = '/api'
-const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
+// const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
+const baseURL = 'http://162.105.209.91:443/api-service/'
 
 export const getArchivesList = () => {
     return {
@@ -34,40 +36,42 @@ export const getArchivesItemList = () => {
 }
 
 export const getForm  = (url, callback) => {
-    const token = Cookie.get('mytoken')
-    console.log('getForm 的表单: ',url);
+    // const token = Cookie.get('mytoken')
+    const token = store.state.cookie.token
+    // console.log('getForm 的表单: ',url);
     http.request({
         method: "get",
         url: baseURL + url,
         headers: {token: token},
     }).then((response) => {
-        console.log("getForm 的 response: ", response);
+        // console.log("getForm 的 response: ", response);
         callback(response.data)
     })
 }
 
 export const getTemplateInfo = (templateId, callback) => {
     // return a List of children template id
-    console.log("get template info 的 request:", templateId);
+    // console.log("get template info 的 request:", templateId);
     http.request({
         method: "get",
         url: `${baseURL}template/one?main_id=${templateId}`
     }).then(({data: response}) => {
-        console.log("get template info 的 response: ", response);
+        // console.log("get template info 的 response: ", response);
         callback(response)
     })
 }
 
 export const postForm = (url, data, callback) => {
-    const token = Cookie.get('mytoken')
-    console.log('postForm 的表单: ',url , data);
+    // const token = Cookie.get('mytoken')
+    const token = store.state.cookie.token
+    // console.log('postForm 的表单: ',url , data);
     http.request({
         method: "post",
         url: baseURL + url,
         headers: {token: token},
         data: data
     }).then((response) => {
-        console.log("postForm 的 response: ", response);
+        // console.log("postForm 的 response: ", response);
         callback(response.data)
     })
 }
@@ -186,7 +190,9 @@ export const login = (data, oriThis) => {
         let response = res.data
         if(response.code === 0){
             const menu = config.mainMenu
-            Cookie.set('mytoken', response.data),
+            // Cookie.set('mytoken', response.data, {secure: true}),
+            
+            oriThis.$store.commit('setToken', response.data)
             oriThis.$store.commit('setMenu', menu)
             oriThis.$store.commit('addMenu', oriThis.$router)
             oriThis.$router.push({name: 'home'})

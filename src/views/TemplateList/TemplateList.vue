@@ -166,7 +166,7 @@ export default {
                             children_template_limit: this.editTemplate.children_template_limit,
                             brother_use_limit: this.editTemplate.brother_use_limit,
                         }
-                        console.log(requestData);
+                        // console.log(requestData);
                         postForm('template/update', requestData, (response) => {
                             if(response.code !== 0){
                                 this.$message({
@@ -259,7 +259,6 @@ export default {
                             })
                         }
                     }
-                    console.log(this.fieldList)
                 }
                 else{
                     oriThis.$message({

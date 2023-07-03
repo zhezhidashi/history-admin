@@ -19,8 +19,9 @@ new Vue({
     if (sessionStorage.getItem("store")) {
       // console.log('页面重新加载');
       let storet = sessionStorage.getItem("store");
-      // console.log(storet);
+      // console.log("storet:", storet);
       this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(storet == null ? '' : storet)))
+      // console.log("state: ", this.$store.state);
       this.$store.commit('addMenu', router)
     }
     //在页面刷新时将vuex里的信息保存到sessionStorage里

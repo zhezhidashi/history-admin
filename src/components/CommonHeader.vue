@@ -46,7 +46,7 @@ export default {
             // 清除Cookie的toke
             if(command === 'logout'){
                 Cookie.remove('token')
-                Cookie.remove('menu')
+                Cookie.remove('mytoken')
                 this.$router.push('login')
             }
         }
@@ -59,7 +59,7 @@ export default {
     },
 
     mounted(){
-        console.log(this.tags);
+        // console.log(this.tags);
     }
 }
 </script>
