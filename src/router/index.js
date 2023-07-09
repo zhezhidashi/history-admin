@@ -42,7 +42,14 @@ const router = new VueRouter({
 router.beforeEach((to, from ,next) => {
     // const token = Cookie.get('mytoken')
     const storet = JSON.parse(sessionStorage.getItem("store"));
-    const token = storet.cookie.token
+    // const token = storet.cookie.token
+    var token;
+    if(storet) {
+        token = storet.cookie.token
+    }
+    else {
+        token = ''
+    }
     // console.log('in guard: ', token);
     // console.log(from.name, to.name);
     if(token === '' && to.name !== 'login' && from.name !== 'login') {

@@ -192,9 +192,10 @@ export default {
             this.dataDialogVisible = true
         },
         submitData(){
-            console.log(this.form);
+            // console.log("form: ", this.form);
+            // console.log('template: ', this.selectedChildTemplate);
             for(let item of Object.entries(this.selectedChildTemplate.structure)){
-                if(this.form[item[0]] !== '') {
+                if(this.form[item[0]]) {
                     if(item[1].data_type === 'float') this.form[item[0]] = parseFloat(this.form[item[0]])
                     continue
                 }

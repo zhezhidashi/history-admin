@@ -3,9 +3,9 @@ import Cookie from 'js-cookie'
 import config from '../config'
 import store from "@/store";
 
-// const baseURL = '/api'
+const baseURL = '/api'
 // const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
-const baseURL = 'http://162.105.209.91:443/api-service/'
+// const baseURL = 'http://xks.pku.edu.cn:443//api-service/'
 
 export const getArchivesList = () => {
     return {
@@ -191,9 +191,13 @@ export const login = (data, oriThis) => {
         if(response.code === 0){
             const menu = config.mainMenu
             // Cookie.set('mytoken', response.data, {secure: true}),
+            // console.log('login: ', response);
             
             oriThis.$store.commit('setToken', response.data)
             oriThis.$store.commit('setMenu', menu)
+            let state = JSON.stringify(oriThis.$store.state)
+            sessionStorage.setItem("store", state == null ? '' : state)
+
             oriThis.$store.commit('addMenu', oriThis.$router)
             oriThis.$router.push({name: 'home'})
         }

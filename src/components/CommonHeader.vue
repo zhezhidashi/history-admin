@@ -46,8 +46,11 @@ export default {
             // 清除Cookie的toke
             if(command === 'logout'){
                 Cookie.remove('token')
-                Cookie.remove('mytoken')
-                this.$router.push('login')
+                // Cookie.remove('mytoken')
+                this.$store.commit("setToken", '')
+                let state = JSON.stringify(this.$store.state)
+                sessionStorage.setItem("store", state == null ? '' : state)
+                this.$router.push({name: 'login'})
             }
         }
     },

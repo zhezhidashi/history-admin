@@ -197,7 +197,7 @@ export default {
                         oriThis.returnVal = response.data.path
                     }
                     if(this.type === 'picture'){
-                        oriThis.returnVal = 'http://162.105.209.91:443/img-service/' + response.data.full
+                        oriThis.returnVal = 'http://xks.pku.edu.cn:443/img-service/' + response.data.full
                     }
                 }
                 else{
