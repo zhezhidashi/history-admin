@@ -37,6 +37,36 @@
             </span>
         </el-dialog>
 
+        <!-- 删除功能的对话框 -->
+        <el-dialog
+            title="提示"
+            :visible.sync="deleteDialogVisible"
+            width="50%"
+            :before-close="handleCloseDelete"
+            :close-on-click-modal="false"
+        >
+            <el-form ref="form" :model="form" label-width="120px">
+                <el-form-item label="删除模式">
+                    <el-radio v-model="deleteForm.mode" label="clear">清除</el-radio>
+                    <el-radio v-model="deleteForm.mode" label="merge">合并</el-radio>
+                </el-form-item>
+                <el-form-item v-if="deleteForm.mode === 'merge'" label="合并的用户组">
+                    <el-select v-model="deleteForm.merge" placeholder="请选择">
+                        <el-option
+                            v-for="item in deleteOption"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="handleCloseDelete">取 消</el-button>
+                <el-button type="primary" @click="submitDelete">确 定</el-button>
+            </span>
+        </el-dialog>
+
         <div class="commonTable">
             <el-table
                 :data="tableData"
@@ -49,6 +79,10 @@
                         <el-button
                         size="mini"
                         @click="handleEdit(scope.row)">编辑</el-button>
+                        <el-button
+                        size="mini"
+                        type="danger"
+                        @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -70,10 +104,17 @@ export default {
     data() {
       return {
         dialogVisible: false,
+        deleteDialogVisible: false,
         form: {
             name: '',
             scope: [],
         },
+        deleteForm: {
+            name: '',
+            mode: '',
+            merge: '',
+        },
+        deleteOption: [],
         itemData:{
             val: {},
             visible: false,
@@ -165,6 +206,52 @@ export default {
                 }
             }
         },
+        // 删除对话框相关函数
+        handleDelete(row){
+            // console.log("delete", row);
+            this.deleteForm = {
+                name: row.name,
+                mode: 'clear',
+                merge: '',
+            },
+            this.deleteOption = []
+            for(let item of this.groupList) {
+                if (item.name !== row.name) {
+                    this.deleteOption.push({lable: item.name, value: item.name})
+                }
+            }
+            this.deleteDialogVisible = true
+        },
+        handleCloseDelete() {
+            this.deleteDialogVisible = false
+        },
+        submitDelete() {
+            // console.log("form: ", this.deleteForm);
+            if(this.deleteForm.mode === 'merge' && this.deleteForm.merge === '') {
+                this.$message({
+                    message: "请选择合并的用户组",
+                    type: "error"
+                })
+                return;
+            }
+            const requestData = {
+                name: this.deleteForm.name,
+                delete_mode: this.deleteForm.mode,
+                merge_target: this.deleteForm.merge,
+            }
+
+            let oriThis = this
+            postForm('user/group/delete', requestData, (response) => {
+                if(response.code === 0){
+                    oriThis.getGroupList()
+                    oriThis.deleteDialogVisible = false
+                }
+                else{
+                    this.$message({message: response.msg, type: 'error'})
+                }
+            })
+        },
+        // 删除相关函数结束
         addItem(){
             this.itemData.val = {
                 path: '',
@@ -188,6 +275,7 @@ export default {
             getForm('user/group/list', (response) => {
                 if(response.code === 0){
                     // console.log('user group list: ', response.data);
+                    this.groupList = response.data
                     oriThis.tableData = response.data
                 }
                 else{

@@ -3,9 +3,9 @@ import Cookie from 'js-cookie'
 import config from '../config'
 import store from "@/store";
 
-const baseURL = '/api'
+// const baseURL = '/api'
 // const baseURL = 'https://room_dev_admin.pacificsilkroad.cn/api-service/'
-// const baseURL = 'http://xks.pku.edu.cn:443//api-service/'
+const baseURL = 'http://xks.pku.edu.cn:443/api-service/'
 
 export const getArchivesList = () => {
     return {
