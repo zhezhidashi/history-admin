@@ -222,6 +222,11 @@ export default {
             pre: 'other',
             dataType: 'float',
         },
+        {
+            showName: 'pdf',
+            pre: 'pdf',
+            dataType: 'str',
+        },
     ],
     templateId: templateId
 }

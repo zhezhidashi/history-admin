@@ -73,7 +73,7 @@
 
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="uploadFile('picture')">上传图片</el-button>
-                <el-button type="primary" @click="uploadFile('media')">上传媒体文件</el-button>
+                <el-button type="primary" @click="uploadFile('media')">上传媒体文件或PDF</el-button>
                 <el-button @click="handleClose">取 消</el-button>
                 <el-button type="primary" @click="submitData">确 定</el-button>
             </span>

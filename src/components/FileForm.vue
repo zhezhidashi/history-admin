@@ -49,7 +49,7 @@
         </div>
         <div v-if="filetype === 'media'">
             <el-dialog
-                title="上传媒体文件"
+                title="上传媒体文件或PDF"
                 :visible.sync="dialogVisible"
                 width="50%"
                 :before-close="handleClose"

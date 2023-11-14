@@ -5,7 +5,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
         '/api': {
-            target: 'https://room_dev_admin.pacificsilkroad.cn/api-service',
+            target: 'http://xks.pku.edu.cn:443/api-service/',
             pathRewrite: {'^/api': ''},
             ws: true,
             changeOrigin: true
